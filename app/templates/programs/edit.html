@@ -1,0 +1,628 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Program{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div class="breadcrumb">
+        <a href="{{ url_for('dashboard.programs') }}">Programs</a>
+        <span>›</span>
+        <a href="{{ url_for('dashboard.program_details', program_id=program.id) }}">
+            {{ program.name }}
+        </a>
+        <span>›</span>
+        <span>Edit</span>
+    </div>
+
+    <h1>Edit Program</h1>
+
+    <p>
+        Update the details of this church program or service.
+    </p>
+
+</div>
+
+
+<div class="form-card">
+
+    <form method="POST">
+
+        <!-- Program Information -->
+
+        <div class="form-section">
+
+            <div class="section-header">
+
+                <h2>Program Information</h2>
+
+                <p>
+                    Update the basic information for this church
+                    program or service.
+                </p>
+
+            </div>
+
+
+            <div class="form-grid">
+
+                <!-- Program Name -->
+
+                <div class="form-group full-width">
+
+                    <label for="name">
+                        Program Name
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        value="{{ program.name }}"
+                        placeholder="e.g. Tuesday Dawn Service"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Day -->
+
+                <div class="form-group">
+
+                    <label for="day_of_week">
+                        Day of the Week
+                    </label>
+
+                    <select
+                        id="day_of_week"
+                        name="day_of_week"
+                    >
+
+                        <option value="">
+                            Select a day
+                        </option>
+
+                        <option value="Monday"
+                            {% if program.day_of_week == "Monday" %}
+                                selected
+                            {% endif %}
+                        >
+                            Monday
+                        </option>
+
+                        <option value="Tuesday"
+                            {% if program.day_of_week == "Tuesday" %}
+                                selected
+                            {% endif %}
+                        >
+                            Tuesday
+                        </option>
+
+                        <option value="Wednesday"
+                            {% if program.day_of_week == "Wednesday" %}
+                                selected
+                            {% endif %}
+                        >
+                            Wednesday
+                        </option>
+
+                        <option value="Thursday"
+                            {% if program.day_of_week == "Thursday" %}
+                                selected
+                            {% endif %}
+                        >
+                            Thursday
+                        </option>
+
+                        <option value="Friday"
+                            {% if program.day_of_week == "Friday" %}
+                                selected
+                            {% endif %}
+                        >
+                            Friday
+                        </option>
+
+                        <option value="Saturday"
+                            {% if program.day_of_week == "Saturday" %}
+                                selected
+                            {% endif %}
+                        >
+                            Saturday
+                        </option>
+
+                        <option value="Sunday"
+                            {% if program.day_of_week == "Sunday" %}
+                                selected
+                            {% endif %}
+                        >
+                            Sunday
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- Start Time -->
+
+                <div class="form-group">
+
+                    <label for="start_time">
+                        Start Time
+                    </label>
+
+                    <input
+                        type="time"
+                        id="start_time"
+                        name="start_time"
+                        value="{% if program.start_time %}{{ program.start_time.strftime('%H:%M') }}{% endif %}"
+                    >
+
+                    <span class="help-text">
+                        The start time can be used when scheduling reminders.
+                    </span>
+
+                </div>
+
+
+                <!-- Location -->
+
+                <div class="form-group full-width">
+
+                    <label for="location">
+                        Location
+                    </label>
+
+                    <input
+                        type="text"
+                        id="location"
+                        name="location"
+                        value="{{ program.location or '' }}"
+                        placeholder="e.g. Main Auditorium"
+                    >
+
+                </div>
+
+
+                <!-- Description -->
+
+                <div class="form-group full-width">
+
+                    <label for="description">
+                        Description
+                    </label>
+
+                    <textarea
+                        id="description"
+                        name="description"
+                        placeholder="Describe this program or service..."
+                    >{{ program.description or '' }}</textarea>
+
+                    <span class="help-text">
+                        A short description helps identify the purpose
+                        of the program.
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Program Status -->
+
+        <div class="form-section">
+
+            <div class="section-header">
+
+                <h2>Program Status</h2>
+
+                <p>
+                    Control whether this program is currently active.
+                </p>
+
+            </div>
+
+
+            <div class="status-box">
+
+                <label class="checkbox-row">
+
+                    <input
+                        type="checkbox"
+                        id="is_active"
+                        name="is_active"
+                        {% if program.is_active %}
+                            checked
+                        {% endif %}
+                    >
+
+                    <div class="checkbox-content">
+
+                        <div class="checkbox-title">
+                            Active Program
+                        </div>
+
+                        <div class="checkbox-description">
+                            Active programs can be used for future
+                            reminders and church communication.
+                        </div>
+
+                    </div>
+
+                </label>
+
+            </div>
+
+        </div>
+
+
+        <!-- Information -->
+
+        <div class="info-box">
+
+            <div class="info-icon">
+                💡
+            </div>
+
+            <div>
+
+                <strong>
+                    ChurchConnect Reminder System
+                </strong>
+
+                <p>
+                    Program information can be used when creating
+                    automated reminders for church members.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- Actions -->
+
+        <div class="form-actions">
+
+            <a
+                href="{{ url_for('dashboard.program_details', program_id=program.id) }}"
+                class="secondary-button"
+            >
+                Cancel
+            </a>
+
+            <button
+                type="submit"
+                class="primary-button"
+            >
+                Save Changes
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<style>
+
+/* ================================
+   PAGE HEADER
+================================ */
+
+.page-header {
+    margin-bottom: 25px;
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 9px;
+    font-size: 13px;
+    color: #8a958f;
+}
+
+.breadcrumb a {
+    color: #12372a;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+.page-header h1 {
+    margin: 0 0 6px;
+    font-size: 30px;
+    letter-spacing: -0.4px;
+}
+
+.page-header p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+
+/* ================================
+   FORM CARD
+================================ */
+
+.form-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 25px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
+}
+
+
+/* ================================
+   FORM SECTION
+================================ */
+
+.form-section {
+    margin-bottom: 30px;
+}
+
+.section-header {
+    margin-bottom: 22px;
+}
+
+.section-header h2 {
+    margin: 0;
+    font-size: 19px;
+    color: #17221d;
+}
+
+.section-header p {
+    margin: 5px 0 0;
+    color: #6b7280;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+
+/* ================================
+   FORM GRID
+================================ */
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 21px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.full-width {
+    grid-column: 1 / -1;
+}
+
+
+/* ================================
+   FORM ELEMENTS
+================================ */
+
+.form-group label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #35463e;
+}
+
+.required {
+    color: #b43b3b;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    border: 1px solid #dbe4df;
+    border-radius: 9px;
+    padding: 11px 12px;
+    font-family: inherit;
+    font-size: 14px;
+    color: #17221d;
+    background: #ffffff;
+    outline: none;
+    box-sizing: border-box;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.form-group input,
+.form-group select {
+    min-height: 44px;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: #12372a;
+    box-shadow: 0 0 0 3px rgba(18, 55, 42, 0.08);
+}
+
+.form-group textarea {
+    min-height: 125px;
+    resize: vertical;
+}
+
+.help-text {
+    color: #8a958f;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+
+/* ================================
+   STATUS
+================================ */
+
+.status-box {
+    border: 1px solid #e1e8e4;
+    border-radius: 11px;
+    padding: 17px;
+    background: #fbfcfb;
+}
+
+.checkbox-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    cursor: pointer;
+}
+
+.checkbox-row input {
+    width: 18px;
+    height: 18px;
+    margin: 1px 0 0;
+    flex-shrink: 0;
+    accent-color: #12372a;
+}
+
+.checkbox-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.checkbox-title {
+    color: #26362f;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.checkbox-description {
+    color: #78837e;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+
+/* ================================
+   INFORMATION BOX
+================================ */
+
+.info-box {
+    display: flex;
+    gap: 12px;
+    margin-top: 25px;
+    padding: 16px;
+    border-radius: 11px;
+    background: #edf6f1;
+    border: 1px solid #d8e9df;
+    color: #456056;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.info-icon {
+    font-size: 19px;
+    flex-shrink: 0;
+}
+
+.info-box strong {
+    color: #12372a;
+}
+
+.info-box p {
+    margin: 4px 0 0;
+}
+
+
+/* ================================
+   ACTIONS
+================================ */
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 28px;
+    padding-top: 22px;
+    border-top: 1px solid #edf1ef;
+}
+
+.primary-button,
+.secondary-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 17px;
+    border-radius: 9px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.primary-button {
+    border: 1px solid #12372a;
+    background: #12372a;
+    color: #ffffff;
+}
+
+.primary-button:hover {
+    background: #0d2b20;
+}
+
+.secondary-button {
+    border: 1px solid #dfe7e2;
+    background: #ffffff;
+    color: #304139;
+}
+
+.secondary-button:hover {
+    background: #f8faf9;
+}
+
+
+/* ================================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 700px) {
+
+    .form-card {
+        padding: 20px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .full-width {
+        grid-column: auto;
+    }
+
+    .form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .form-actions .primary-button,
+    .form-actions .secondary-button {
+        width: 100%;
+    }
+
+}
+
+</style>
+
+{% endblock %}

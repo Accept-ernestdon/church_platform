@@ -1,0 +1,487 @@
+{% extends "base.html" %}
+
+{% block title %}Import Results - ChurchConnect{% endblock %}
+
+{% block content %}
+
+<style>
+    .results-page {
+        max-width: 1050px;
+        margin: 0 auto;
+        padding: 10px 0 40px;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+    }
+
+    .header-left h1 {
+        margin: 0 0 6px;
+        color: #111827;
+        font-size: 28px;
+        font-weight: 700;
+    }
+
+    .header-left p {
+        margin: 0;
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    .header-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        color: #374151;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+        transition: 0.2s ease;
+    }
+
+    .header-button:hover {
+        background: #f9fafb;
+        border-color: #d1d5db;
+    }
+
+    .success-banner {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        border-radius: 16px;
+        padding: 22px;
+        margin-bottom: 22px;
+    }
+
+    .success-banner h2 {
+        margin: 0 0 6px;
+        color: #166534;
+        font-size: 19px;
+    }
+
+    .success-banner p {
+        margin: 0;
+        color: #15803d;
+        font-size: 13px;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+        margin-bottom: 25px;
+    }
+
+    .stat-card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 15px;
+        padding: 22px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.025);
+    }
+
+    .stat-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 11px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 14px;
+        font-size: 19px;
+    }
+
+    .stat-icon.imported {
+        background: #ecfdf3;
+    }
+
+    .stat-icon.skipped {
+        background: #fff7ed;
+    }
+
+    .stat-icon.issues {
+        background: #fef2f2;
+    }
+
+    .stat-label {
+        margin-bottom: 7px;
+        color: #6b7280;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .stat-value {
+        color: #111827;
+        font-size: 28px;
+        font-weight: 700;
+    }
+
+    .issues-card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.025);
+        margin-bottom: 25px;
+    }
+
+    .card-header {
+        padding: 20px 22px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .card-header h2 {
+        margin: 0 0 5px;
+        color: #111827;
+        font-size: 18px;
+    }
+
+    .card-header p {
+        margin: 0;
+        color: #6b7280;
+        font-size: 12px;
+    }
+
+    .issue-list {
+        padding: 8px 22px;
+    }
+
+    .issue-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 15px 0;
+        border-bottom: 1px solid #f0f1f3;
+    }
+
+    .issue-item:last-child {
+        border-bottom: none;
+    }
+
+    .issue-icon {
+        flex-shrink: 0;
+        width: 32px;
+        height: 32px;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+    }
+
+    .issue-skipped .issue-icon {
+        background: #fff7ed;
+    }
+
+    .issue-warning .issue-icon {
+        background: #eff6ff;
+    }
+
+    .issue-content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .issue-row {
+        margin-bottom: 3px;
+        color: #374151;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .issue-message {
+        color: #6b7280;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    .no-issues {
+        padding: 35px 22px;
+        text-align: center;
+    }
+
+    .no-issues-icon {
+        font-size: 36px;
+        margin-bottom: 10px;
+    }
+
+    .no-issues h3 {
+        margin: 0 0 5px;
+        color: #111827;
+        font-size: 16px;
+    }
+
+    .no-issues p {
+        margin: 0;
+        color: #6b7280;
+        font-size: 12px;
+    }
+
+    .bottom-actions {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .primary-button,
+    .secondary-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 11px 18px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 700;
+        transition: 0.2s ease;
+    }
+
+    .primary-button {
+        background: #12372a;
+        color: #ffffff;
+    }
+
+    .primary-button:hover {
+        background: #0d2a20;
+        transform: translateY(-1px);
+    }
+
+    .secondary-button {
+        background: #ffffff;
+        color: #374151;
+        border: 1px solid #d1d5db;
+    }
+
+    .secondary-button:hover {
+        background: #f9fafb;
+    }
+
+    @media (max-width: 750px) {
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .header-left h1 {
+            font-size: 24px;
+        }
+
+        .header-button {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
+
+<div class="results-page">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+
+        <div class="header-left">
+
+            <h1>
+                Import Results
+            </h1>
+
+            <p>
+                Here's a summary of what happened with your Excel import.
+            </p>
+
+        </div>
+
+        <a
+            href="{{ url_for('dashboard.members') }}"
+            class="header-button"
+        >
+            ← Back to Members
+        </a>
+
+    </div>
+
+
+    <!-- SUCCESS BANNER -->
+    <div class="success-banner">
+
+        <h2>
+            ✓ Import completed
+        </h2>
+
+        <p>
+            ChurchConnect has finished processing your Excel file.
+        </p>
+
+    </div>
+
+
+    <!-- STATISTICS -->
+    <div class="stats-grid">
+
+        <div class="stat-card">
+
+            <div class="stat-icon imported">
+                ✓
+            </div>
+
+            <div class="stat-label">
+                Members Imported
+            </div>
+
+            <div class="stat-value">
+                {{ imported_count }}
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon skipped">
+                ⚠
+            </div>
+
+            <div class="stat-label">
+                Rows Skipped
+            </div>
+
+            <div class="stat-value">
+                {{ skipped_count }}
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon issues">
+                !
+            </div>
+
+            <div class="stat-label">
+                Total Issues / Warnings
+            </div>
+
+            <div class="stat-value">
+                {{ issues|length }}
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ISSUES -->
+    <div class="issues-card">
+
+        <div class="card-header">
+
+            <h2>
+                Import details
+            </h2>
+
+            <p>
+                Review any rows that were skipped or require your attention.
+            </p>
+
+        </div>
+
+
+        {% if issues %}
+
+            <div class="issue-list">
+
+                {% for issue in issues %}
+
+                    <div
+                        class="issue-item
+                        {% if issue.type == 'skipped' %}
+                            issue-skipped
+                        {% else %}
+                            issue-warning
+                        {% endif %}"
+                    >
+
+                        <div class="issue-icon">
+
+                            {% if issue.type == "skipped" %}
+                                ⚠️
+                            {% else %}
+                                💡
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="issue-content">
+
+                            <div class="issue-row">
+                                Excel Row {{ issue.row }}
+                            </div>
+
+                            <div class="issue-message">
+                                {{ issue.message }}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="no-issues">
+
+                <div class="no-issues-icon">
+                    🎉
+                </div>
+
+                <h3>
+                    Everything looks good!
+                </h3>
+
+                <p>
+                    All rows were imported successfully without warnings.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- ACTIONS -->
+    <div class="bottom-actions">
+
+        <a
+            href="{{ url_for('dashboard.members') }}"
+            class="primary-button"
+        >
+            👥 View Members
+        </a>
+
+        <a
+            href="{{ url_for('dashboard.import_members') }}"
+            class="secondary-button"
+        >
+            📥 Import Another File
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

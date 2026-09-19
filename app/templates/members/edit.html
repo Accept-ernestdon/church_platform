@@ -1,0 +1,619 @@
+{% extends "base.html" %}
+
+{% block title %}Edit {{ member.name }} - ChurchConnect{% endblock %}
+
+{% block content %}
+
+<style>
+    .edit-member-page {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .edit-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 28px;
+    }
+
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        border: 1px solid #e5e7eb;
+        background: #ffffff;
+        color: #374151;
+        text-decoration: none;
+        font-size: 20px;
+        transition: 0.2s ease;
+    }
+
+    .back-button:hover {
+        background: #f3f4f6;
+        transform: translateX(-2px);
+    }
+
+    .edit-title {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 700;
+        color: #111827;
+    }
+
+    .edit-subtitle {
+        margin: 5px 0 0;
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    .edit-card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        padding: 28px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    }
+
+    .form-section {
+        margin-bottom: 30px;
+    }
+
+    .form-section:last-of-type {
+        margin-bottom: 0;
+    }
+
+    .section-title {
+        margin: 0 0 5px;
+        font-size: 17px;
+        font-weight: 700;
+        color: #111827;
+    }
+
+    .section-description {
+        margin: 0 0 20px;
+        color: #6b7280;
+        font-size: 13px;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .form-label {
+        margin-bottom: 7px;
+        color: #374151;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .required {
+        color: #dc2626;
+    }
+
+    .form-input,
+    .form-select {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 12px 13px;
+        border: 1px solid #d1d5db;
+        border-radius: 9px;
+        background: #ffffff;
+        color: #111827;
+        font-size: 14px;
+        outline: none;
+        transition: 0.2s ease;
+    }
+
+    .form-input:focus,
+    .form-select:focus {
+        border-color: #12372a;
+        box-shadow: 0 0 0 3px rgba(18, 55, 42, 0.08);
+    }
+
+    .form-help {
+        margin-top: 6px;
+        color: #9ca3af;
+        font-size: 12px;
+    }
+
+    .preferences-list {
+        display: grid;
+        gap: 12px;
+    }
+
+    .preference-option {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 15px;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        background: #fafafa;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    .preference-option:hover {
+        border-color: #cbd5d1;
+        background: #ffffff;
+    }
+
+    .preference-checkbox {
+        width: 17px;
+        height: 17px;
+        accent-color: #12372a;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .preference-content {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+    }
+
+    .preference-title {
+        color: #111827;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .preference-description {
+        color: #6b7280;
+        font-size: 12px;
+    }
+
+    .form-divider {
+        height: 1px;
+        background: #f0f0f0;
+        margin: 28px 0;
+    }
+
+    .status-option {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 15px;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        background: #ffffff;
+        cursor: pointer;
+    }
+
+    .status-checkbox {
+        width: 17px;
+        height: 17px;
+        accent-color: #12372a;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .status-content {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+    }
+
+    .status-title {
+        color: #111827;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .status-description {
+        color: #6b7280;
+        font-size: 12px;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 10px;
+        margin-top: 30px;
+        padding-top: 22px;
+        border-top: 1px solid #f0f0f0;
+    }
+
+    .cancel-button,
+    .save-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 11px 18px;
+        border-radius: 9px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    .cancel-button {
+        background: #ffffff;
+        color: #374151;
+        border: 1px solid #e5e7eb;
+    }
+
+    .cancel-button:hover {
+        background: #f9fafb;
+    }
+
+    .save-button {
+        background: #12372a;
+        color: #ffffff;
+        border: 1px solid #12372a;
+    }
+
+    .save-button:hover {
+        background: #0d2a20;
+        transform: translateY(-1px);
+    }
+
+    @media (max-width: 700px) {
+        .edit-card {
+            padding: 20px;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group.full-width {
+            grid-column: auto;
+        }
+
+        .form-actions {
+            flex-direction: column-reverse;
+        }
+
+        .cancel-button,
+        .save-button {
+            width: 100%;
+        }
+    }
+</style>
+
+
+<div class="edit-member-page">
+
+    <!-- Header -->
+    <div class="edit-header">
+
+        <a
+            href="{{ url_for('dashboard.member_details', member_id=member.id) }}"
+            class="back-button"
+            title="Back to member details"
+        >
+            ←
+        </a>
+
+        <div>
+            <h1 class="edit-title">
+                Edit Member
+            </h1>
+
+            <p class="edit-subtitle">
+                Update {{ member.name }}'s information and communication preferences.
+            </p>
+        </div>
+
+    </div>
+
+
+    <!-- Edit Form -->
+    <div class="edit-card">
+
+        <form
+            method="POST"
+            action="{{ url_for('dashboard.edit_member', member_id=member.id) }}"
+        >
+
+            <!-- Personal Information -->
+            <div class="form-section">
+
+                <h2 class="section-title">
+                    Personal Information
+                </h2>
+
+                <p class="section-description">
+                    Update the member's basic contact information.
+                </p>
+
+
+                <div class="form-grid">
+
+                    <!-- Name -->
+                    <div class="form-group">
+
+                        <label
+                            for="name"
+                            class="form-label"
+                        >
+                            Full Name <span class="required">*</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            class="form-input"
+                            value="{{ member.name }}"
+                            placeholder="Enter member's full name"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Phone -->
+                    <div class="form-group">
+
+                        <label
+                            for="phone"
+                            class="form-label"
+                        >
+                            Phone Number <span class="required">*</span>
+                        </label>
+
+                        <input
+                            type="tel"
+                            id="phone"
+                            name="phone"
+                            class="form-input"
+                            value="{{ member.phone }}"
+                            placeholder="Enter phone number"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Email -->
+                    <div class="form-group full-width">
+
+                        <label
+                            for="email"
+                            class="form-label"
+                        >
+                            Email Address
+                        </label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            class="form-input"
+                            value="{{ member.email or '' }}"
+                            placeholder="Enter email address"
+                        >
+
+                        <span class="form-help">
+                            Email address is optional.
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-divider"></div>
+
+
+            <!-- Church Group -->
+            <div class="form-section">
+
+                <h2 class="section-title">
+                    Church Group
+                </h2>
+
+                <p class="section-description">
+                    Select the group this member belongs to.
+                </p>
+
+
+                <div class="form-group">
+
+                    <label
+                        for="group"
+                        class="form-label"
+                    >
+                        Member Group
+                    </label>
+
+                    <select
+                        id="group"
+                        name="group"
+                        class="form-select"
+                    >
+
+                        <option value="">
+                            No group
+                        </option>
+
+
+                        {% for group in groups %}
+
+                            <option
+                                value="{{ group.name }}"
+                                {% if member.groups and group.id in member.groups|map(attribute='id')|list %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ group.name }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                    <span class="form-help">
+                        You can change the member's group at any time.
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-divider"></div>
+
+
+            <!-- Communication Preferences -->
+            <div class="form-section">
+
+                <h2 class="section-title">
+                    Communication Preferences
+                </h2>
+
+                <p class="section-description">
+                    Choose which communication channels this member can receive.
+                </p>
+
+
+                <div class="preferences-list">
+
+                    <!-- SMS -->
+                    <label class="preference-option">
+
+                        <input
+                            type="checkbox"
+                            name="sms_opt_in"
+                            class="preference-checkbox"
+                            {% if member.sms_opt_in %}
+                                checked
+                            {% endif %}
+                        >
+
+                        <span class="preference-content">
+
+                            <span class="preference-title">
+                                SMS Messages
+                            </span>
+
+                            <span class="preference-description">
+                                Allow this member to receive SMS reminders from the church.
+                            </span>
+
+                        </span>
+
+                    </label>
+
+
+                    <!-- WhatsApp -->
+                    <label class="preference-option">
+
+                        <input
+                            type="checkbox"
+                            name="whatsapp_opt_in"
+                            class="preference-checkbox"
+                            {% if member.whatsapp_opt_in %}
+                                checked
+                            {% endif %}
+                        >
+
+                        <span class="preference-content">
+
+                            <span class="preference-title">
+                                WhatsApp Messages
+                            </span>
+
+                            <span class="preference-description">
+                                Allow this member to receive WhatsApp messages.
+                            </span>
+
+                        </span>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-divider"></div>
+
+
+            <!-- Member Status -->
+            <div class="form-section">
+
+                <h2 class="section-title">
+                    Member Status
+                </h2>
+
+                <p class="section-description">
+                    Inactive members can remain in the database without receiving active communications.
+                </p>
+
+
+                <label class="status-option">
+
+                    <input
+                        type="checkbox"
+                        name="is_active"
+                        class="status-checkbox"
+                        {% if member.is_active %}
+                            checked
+                        {% endif %}
+                    >
+
+                    <span class="status-content">
+
+                        <span class="status-title">
+                            Active Member
+                        </span>
+
+                        <span class="status-description">
+                            Keep this member active in the church database.
+                        </span>
+
+                    </span>
+
+                </label>
+
+            </div>
+
+
+            <!-- Actions -->
+            <div class="form-actions">
+
+                <a
+                    href="{{ url_for('dashboard.member_details', member_id=member.id) }}"
+                    class="cancel-button"
+                >
+                    Cancel
+                </a>
+
+                <button
+                    type="submit"
+                    class="save-button"
+                >
+                    ✓ Save Changes
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

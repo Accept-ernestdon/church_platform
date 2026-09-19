@@ -1,0 +1,417 @@
+{% extends "base.html" %}
+
+{% block title %}Campaigns | ChurchConnect{% endblock %}
+
+{% block content %}
+
+<div style="max-width: 1150px; margin: 0 auto;">
+
+    <!-- PAGE HEADER -->
+    <div style="
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 28px;
+    ">
+        <div>
+            <h1 style="
+                margin: 0;
+                font-size: 30px;
+                font-weight: 700;
+                color: #12372a;
+            ">
+                Campaigns
+            </h1>
+
+            <p style="
+                margin: 8px 0 0;
+                color: #6b7280;
+                font-size: 15px;
+            ">
+                Create and manage church communication campaigns.
+            </p>
+        </div>
+
+        <!-- NEW CAMPAIGN BUTTON -->
+        <a
+            href="{{ url_for('dashboard.add_campaign') }}"
+            style="
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                background: #12372a;
+                color: white;
+                border: none;
+                border-radius: 10px;
+                padding: 11px 18px;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+                text-decoration: none;
+            "
+        >
+            + New Campaign
+        </a>
+    </div>
+
+
+    <!-- FLASH MESSAGES -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+
+        {% if messages %}
+
+            {% for category, message in messages %}
+
+                <div style="
+                    margin-bottom: 16px;
+                    padding: 13px 16px;
+                    border-radius: 10px;
+                    background: #f0fdf4;
+                    color: #166534;
+                    border: 1px solid #bbf7d0;
+                ">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+    {% endwith %}
+
+
+    <!-- CAMPAIGNS -->
+    {% if campaigns %}
+
+        <div style="
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 18px;
+        ">
+
+            {% for campaign in campaigns %}
+
+                <div style="
+                    background: white;
+                    border: 1px solid #e5e7eb;
+                    border-radius: 16px;
+                    padding: 22px;
+                    box-shadow: 0 3px 12px rgba(0,0,0,0.04);
+                ">
+
+                    <!-- TITLE + STATUS -->
+                    <div style="
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: flex-start;
+                        gap: 12px;
+                    ">
+
+                        <div style="min-width: 0;">
+
+                            <h3 style="
+                                margin: 0;
+                                color: #12372a;
+                                font-size: 18px;
+                                font-weight: 700;
+                            ">
+                                {{ campaign.title }}
+                            </h3>
+
+                            <p style="
+                                margin: 8px 0 0;
+                                color: #6b7280;
+                                font-size: 14px;
+                                line-height: 1.5;
+                            ">
+                                {{ campaign.message[:120] }}
+
+                                {% if campaign.message|length > 120 %}
+                                    ...
+                                {% endif %}
+                            </p>
+
+                        </div>
+
+
+                        <!-- STATUS BADGE -->
+                        {% if campaign.status == "sent" %}
+
+                            <span style="
+                                flex-shrink: 0;
+                                padding: 5px 9px;
+                                border-radius: 999px;
+                                background: #dcfce7;
+                                color: #166534;
+                                font-size: 12px;
+                                font-weight: 600;
+                                text-transform: capitalize;
+                            ">
+                                Sent
+                            </span>
+
+                        {% elif campaign.status == "scheduled" %}
+
+                            <span style="
+                                flex-shrink: 0;
+                                padding: 5px 9px;
+                                border-radius: 999px;
+                                background: #dbeafe;
+                                color: #1d4ed8;
+                                font-size: 12px;
+                                font-weight: 600;
+                                text-transform: capitalize;
+                            ">
+                                Scheduled
+                            </span>
+
+                        {% elif campaign.status == "failed" %}
+
+                            <span style="
+                                flex-shrink: 0;
+                                padding: 5px 9px;
+                                border-radius: 999px;
+                                background: #fee2e2;
+                                color: #991b1b;
+                                font-size: 12px;
+                                font-weight: 600;
+                                text-transform: capitalize;
+                            ">
+                                Failed
+                            </span>
+
+                        {% elif campaign.status == "sending" %}
+
+                            <span style="
+                                flex-shrink: 0;
+                                padding: 5px 9px;
+                                border-radius: 999px;
+                                background: #fef3c7;
+                                color: #92400e;
+                                font-size: 12px;
+                                font-weight: 600;
+                                text-transform: capitalize;
+                            ">
+                                Sending
+                            </span>
+
+                        {% else %}
+
+                            <span style="
+                                flex-shrink: 0;
+                                padding: 5px 9px;
+                                border-radius: 999px;
+                                background: #f3f4f6;
+                                color: #374151;
+                                font-size: 12px;
+                                font-weight: 600;
+                                text-transform: capitalize;
+                            ">
+                                {{ campaign.status }}
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- CAMPAIGN INFORMATION -->
+                    <div style="
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        gap: 14px;
+                        margin-top: 20px;
+                        padding-top: 16px;
+                        border-top: 1px solid #f0f0f0;
+                    ">
+
+                        <!-- AUDIENCE -->
+                        <div>
+                            <div style="
+                                font-size: 12px;
+                                color: #9ca3af;
+                            ">
+                                Audience
+                            </div>
+
+                            <div style="
+                                margin-top: 4px;
+                                font-size: 14px;
+                                color: #374151;
+                                text-transform: capitalize;
+                            ">
+                                {{ campaign.audience_type }}
+                            </div>
+                        </div>
+
+
+                        <!-- CHANNEL -->
+                        <div>
+                            <div style="
+                                font-size: 12px;
+                                color: #9ca3af;
+                            ">
+                                Channel
+                            </div>
+
+                            <div style="
+                                margin-top: 4px;
+                                font-size: 14px;
+                                color: #374151;
+                                text-transform: uppercase;
+                            ">
+                                {{ campaign.channel }}
+                            </div>
+                        </div>
+
+
+                        <!-- RECIPIENTS -->
+                        <div>
+                            <div style="
+                                font-size: 12px;
+                                color: #9ca3af;
+                            ">
+                                Recipients
+                            </div>
+
+                            <div style="
+                                margin-top: 4px;
+                                font-size: 14px;
+                                color: #374151;
+                            ">
+                                {{ campaign.total_recipients }}
+                            </div>
+                        </div>
+
+
+                        <!-- SENT -->
+                        <div>
+                            <div style="
+                                font-size: 12px;
+                                color: #9ca3af;
+                            ">
+                                Sent
+                            </div>
+
+                            <div style="
+                                margin-top: 4px;
+                                font-size: 14px;
+                                color: #374151;
+                            ">
+                                {{ campaign.total_sent }}
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <!-- SCHEDULE -->
+                    {% if campaign.scheduled_at %}
+
+                        <div style="
+                            margin-top: 18px;
+                            padding: 10px 12px;
+                            border-radius: 9px;
+                            background: #f9fafb;
+                            color: #4b5563;
+                            font-size: 13px;
+                        ">
+                            Scheduled:
+                            {{ campaign.scheduled_at.strftime('%d %b %Y, %I:%M %p') }}
+                        </div>
+
+                                           {% endif %}
+
+
+                       <!-- CAMPAIGN ACTIONS -->
+                       <div style="
+                           display: flex;
+                           gap: 10px;
+                           margin-top: 18px;
+                           padding-top: 16px;
+                           border-top: 1px solid #f0f0f0;
+                       ">
+
+                           <a
+                               href="{{ url_for('dashboard.campaign_details', campaign_id=campaign.id) }}"
+                               style="
+                                   display: inline-flex;
+                                   align-items: center;
+                                   justify-content: center;
+                                   padding: 9px 14px;
+                                   border-radius: 9px;
+                                   background: #f3f4f6;
+                                   color: #374151;
+                                   text-decoration: none;
+                                   font-size: 13px;
+                                   font-weight: 600;
+                               "
+                           >
+                               View
+                           </a>
+
+                       </div>
+
+
+                   </div>
+
+               {% endfor %}
+
+        </div>
+
+
+    {% else %}
+
+        <!-- EMPTY STATE -->
+        <div style="
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 70px 30px;
+            text-align: center;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.04);
+        ">
+
+            <div style="
+                width: 58px;
+                height: 58px;
+                margin: 0 auto 18px;
+                border-radius: 14px;
+                background: #ecfdf5;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 26px;
+            ">
+                📣
+            </div>
+
+
+            <h2 style="
+                margin: 0;
+                color: #12372a;
+                font-size: 20px;
+                font-weight: 700;
+            ">
+                No campaigns yet
+            </h2>
+
+
+            <p style="
+                margin: 10px auto 24px;
+                max-width: 500px;
+                color: #6b7280;
+                font-size: 14px;
+                line-height: 1.6;
+            ">
+                Create your first campaign to send announcements
+                and important messages to your church members.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

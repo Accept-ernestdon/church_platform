@@ -1,0 +1,484 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Campaign | ChurchConnect{% endblock %}
+
+{% block content %}
+
+<div style="
+    max-width: 850px;
+    margin: 0 auto;
+">
+
+    <!-- BACK -->
+    <div style="margin-bottom: 22px;">
+
+        <a
+            href="{{ url_for('dashboard.campaign_details', campaign_id=campaign.id) }}"
+            style="
+                color: #12372a;
+                text-decoration: none;
+                font-size: 14px;
+                font-weight: 600;
+            "
+        >
+            ← Back to Campaign
+        </a>
+
+    </div>
+
+
+    <!-- HEADER -->
+    <div style="margin-bottom: 24px;">
+
+        <h1 style="
+            margin: 0;
+            color: #12372a;
+            font-size: 30px;
+            font-weight: 700;
+        ">
+            Edit Campaign
+        </h1>
+
+        <p style="
+            margin: 8px 0 0;
+            color: #6b7280;
+            font-size: 15px;
+        ">
+            Update your campaign before it is sent.
+        </p>
+
+    </div>
+
+
+    <!-- FLASH MESSAGES -->
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+
+        {% if messages %}
+
+            {% for category, message in messages %}
+
+                {% if category == "error" %}
+
+                    <div style="
+                        margin-bottom: 14px;
+                        padding: 13px 15px;
+                        border-radius: 10px;
+                        background: #fef2f2;
+                        color: #991b1b;
+                        border: 1px solid #fecaca;
+                        font-size: 14px;
+                    ">
+                        {{ message }}
+                    </div>
+
+                {% else %}
+
+                    <div style="
+                        margin-bottom: 14px;
+                        padding: 13px 15px;
+                        border-radius: 10px;
+                        background: #f0fdf4;
+                        color: #166534;
+                        border: 1px solid #bbf7d0;
+                        font-size: 14px;
+                    ">
+                        {{ message }}
+                    </div>
+
+                {% endif %}
+
+            {% endfor %}
+
+        {% endif %}
+
+    {% endwith %}
+
+
+    <!-- FORM -->
+
+    <form
+        method="POST"
+        action="{{ url_for('dashboard.edit_campaign', campaign_id=campaign.id) }}"
+    >
+
+        <div style="
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 26px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.04);
+        ">
+
+
+            <!-- TITLE -->
+
+            <div style="margin-bottom: 22px;">
+
+                <label style="
+                    display: block;
+                    margin-bottom: 7px;
+                    color: #374151;
+                    font-size: 14px;
+                    font-weight: 600;
+                ">
+                    Campaign Title
+                </label>
+
+                <input
+                    type="text"
+                    name="title"
+                    value="{{ campaign.title }}"
+                    required
+                    maxlength="150"
+                    style="
+                        width: 100%;
+                        box-sizing: border-box;
+                        padding: 12px 14px;
+                        border: 1px solid #d1d5db;
+                        border-radius: 9px;
+                        font-size: 14px;
+                        outline: none;
+                    "
+                >
+
+            </div>
+
+
+            <!-- MESSAGE -->
+
+            <div style="margin-bottom: 22px;">
+
+                <label style="
+                    display: block;
+                    margin-bottom: 7px;
+                    color: #374151;
+                    font-size: 14px;
+                    font-weight: 600;
+                ">
+                    Message
+                </label>
+
+                <textarea
+                    name="message"
+                    rows="6"
+                    required
+                    style="
+                        width: 100%;
+                        box-sizing: border-box;
+                        padding: 12px 14px;
+                        border: 1px solid #d1d5db;
+                        border-radius: 9px;
+                        font-size: 14px;
+                        resize: vertical;
+                        outline: none;
+                    "
+                >{{ campaign.message }}</textarea>
+
+            </div>
+
+
+            <!-- AUDIENCE -->
+
+            <div style="margin-bottom: 22px;">
+
+                <label style="
+                    display: block;
+                    margin-bottom: 10px;
+                    color: #374151;
+                    font-size: 14px;
+                    font-weight: 600;
+                ">
+                    Audience
+                </label>
+
+
+                <label style="
+                    display: flex;
+                    align-items: center;
+                    gap: 9px;
+                    margin-bottom: 10px;
+                    font-size: 14px;
+                    color: #374151;
+                    cursor: pointer;
+                ">
+
+                    <input
+                        type="radio"
+                        name="audience_type"
+                        value="all"
+                        {% if campaign.audience_type == "all" %}
+                            checked
+                        {% endif %}
+                        onchange="toggleGroups()"
+                    >
+
+                    All members
+
+                </label>
+
+
+                <label style="
+                    display: flex;
+                    align-items: center;
+                    gap: 9px;
+                    font-size: 14px;
+                    color: #374151;
+                    cursor: pointer;
+                ">
+
+                    <input
+                        type="radio"
+                        name="audience_type"
+                        value="selected_groups"
+                        {% if campaign.audience_type == "selected_groups" %}
+                            checked
+                        {% endif %}
+                        onchange="toggleGroups()"
+                    >
+
+                    Selected groups
+
+                </label>
+
+            </div>
+
+
+            <!-- GROUPS -->
+
+            <div
+                id="groups-section"
+                {% if campaign.audience_type == "selected_groups" %}
+                    style="
+                        display: block;
+                        margin-bottom: 22px;
+                        padding: 18px;
+                        background: #f9fafb;
+                        border: 1px solid #e5e7eb;
+                        border-radius: 12px;
+                    "
+                {% else %}
+                    style="
+                        display: none;
+                        margin-bottom: 22px;
+                        padding: 18px;
+                        background: #f9fafb;
+                        border: 1px solid #e5e7eb;
+                        border-radius: 12px;
+                    "
+                {% endif %}
+            >
+
+                <div style="
+                    margin-bottom: 12px;
+                    color: #374151;
+                    font-size: 13px;
+                    font-weight: 600;
+                ">
+                    Select groups
+                </div>
+
+
+                {% if groups %}
+
+                    {% for group in groups %}
+
+                        <label style="
+                            display: flex;
+                            align-items: center;
+                            gap: 9px;
+                            margin-bottom: 9px;
+                            color: #374151;
+                            font-size: 14px;
+                            cursor: pointer;
+                        ">
+
+                            <input
+                                type="checkbox"
+                                name="group_ids"
+                                value="{{ group.id }}"
+                                {% if group in campaign.groups %}
+                                    checked
+                                {% endif %}
+                            >
+
+                            {{ group.name }}
+
+                        </label>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <div style="
+                        color: #6b7280;
+                        font-size: 13px;
+                    ">
+                        No active groups are available.
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- CHANNEL -->
+
+            <div style="margin-bottom: 22px;">
+
+                <label style="
+                    display: block;
+                    margin-bottom: 7px;
+                    color: #374151;
+                    font-size: 14px;
+                    font-weight: 600;
+                ">
+                    Channel
+                </label>
+
+                <select
+                    name="channel"
+                    style="
+                        width: 100%;
+                        box-sizing: border-box;
+                        padding: 12px 14px;
+                        border: 1px solid #d1d5db;
+                        border-radius: 9px;
+                        font-size: 14px;
+                        background: white;
+                        outline: none;
+                    "
+                >
+
+                    <option value="sms" selected>
+                        SMS
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- SCHEDULE -->
+
+            <div style="margin-bottom: 26px;">
+
+                <label style="
+                    display: block;
+                    margin-bottom: 7px;
+                    color: #374151;
+                    font-size: 14px;
+                    font-weight: 600;
+                ">
+                    Schedule
+                </label>
+
+                <input
+                    type="datetime-local"
+                    name="scheduled_at"
+                    value="{% if campaign.scheduled_at %}{{ campaign.scheduled_at.strftime('%Y-%m-%dT%H:%M') }}{% endif %}"
+                    style="
+                        width: 100%;
+                        box-sizing: border-box;
+                        padding: 12px 14px;
+                        border: 1px solid #d1d5db;
+                        border-radius: 9px;
+                        font-size: 14px;
+                        outline: none;
+                    "
+                >
+
+                <div style="
+                    margin-top: 7px;
+                    color: #9ca3af;
+                    font-size: 12px;
+                ">
+                    Leave empty to keep this campaign as a draft.
+                </div>
+
+            </div>
+
+
+            <!-- ACTIONS -->
+
+            <div style="
+                display: flex;
+                justify-content: flex-end;
+                gap: 10px;
+                flex-wrap: wrap;
+            ">
+
+                <a
+                    href="{{ url_for('dashboard.campaign_details', campaign_id=campaign.id) }}"
+                    style="
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        padding: 11px 17px;
+                        border-radius: 9px;
+                        background: #f3f4f6;
+                        color: #374151;
+                        text-decoration: none;
+                        font-size: 13px;
+                        font-weight: 600;
+                    "
+                >
+                    Cancel
+                </a>
+
+
+                <button
+                    type="submit"
+                    style="
+                        border: none;
+                        cursor: pointer;
+                        padding: 11px 18px;
+                        border-radius: 9px;
+                        background: #12372a;
+                        color: white;
+                        font-size: 13px;
+                        font-weight: 600;
+                    "
+                >
+                    Save Changes
+                </button>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<script>
+
+function toggleGroups() {
+
+    const selected = document.querySelector(
+        'input[name="audience_type"]:checked'
+    );
+
+    const section = document.getElementById(
+        "groups-section"
+    );
+
+    if (
+        selected &&
+        selected.value === "selected_groups"
+    ) {
+
+        section.style.display = "block";
+
+    } else {
+
+        section.style.display = "none";
+
+    }
+
+}
+
+</script>
+
+{% endblock %}

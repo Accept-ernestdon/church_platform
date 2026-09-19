@@ -1,0 +1,862 @@
+{% extends "base.html" %}
+
+{% block title %}Administrators{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+
+        <div class="page-icon">
+            A
+        </div>
+
+        <h1>
+            Administrators
+        </h1>
+
+        <p>
+            Manage church administrator accounts and access.
+        </p>
+
+    </div>
+
+</div>
+
+
+<div class="stats-grid">
+
+    <div class="stat-card">
+
+        <div class="stat-icon">
+            A
+        </div>
+
+        <div>
+
+            <span class="stat-label">
+                Total Administrators
+            </span>
+
+            <strong class="stat-value">
+                {{ total_administrators }}
+            </strong>
+
+            <span class="stat-description">
+                Church administrator accounts
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon">
+            A
+        </div>
+
+        <div>
+
+            <span class="stat-label">
+                Active Administrators
+            </span>
+
+            <strong class="stat-value">
+                {{ active_administrators }}
+            </strong>
+
+            <span class="stat-description">
+                Currently able to log in
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon">
+            I
+        </div>
+
+        <div>
+
+            <span class="stat-label">
+                Inactive Administrators
+            </span>
+
+            <strong class="stat-value">
+                {{ inactive_administrators }}
+            </strong>
+
+            <span class="stat-description">
+                Access currently disabled
+            </span>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="section-card">
+
+    <div class="section-header">
+
+        <div>
+
+            <h2>
+                Find Administrators
+            </h2>
+
+            <p>
+                Search and filter administrator accounts.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <form
+        method="GET"
+        action="{{ url_for('admin.administrators') }}"
+        class="filter-form"
+    >
+
+        <div class="filter-group search-group">
+
+            <label for="search">
+                Search
+            </label>
+
+            <input
+                type="search"
+                id="search"
+                name="search"
+                value="{{ search }}"
+                placeholder="Name or email"
+            >
+
+        </div>
+
+
+        <div class="filter-group">
+
+            <label for="church_id">
+                Church
+            </label>
+
+            <select
+                id="church_id"
+                name="church_id"
+            >
+
+                <option value="">
+                    All churches
+                </option>
+
+                {% for church in churches %}
+
+                <option
+                    value="{{ church.id }}"
+                    {% if selected_church_id == church.id %}
+                        selected
+                    {% endif %}
+                >
+                    {{ church.name }}
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+        <div class="filter-group">
+
+            <label for="status">
+                Status
+            </label>
+
+            <select
+                id="status"
+                name="status"
+            >
+
+                <option
+                    value=""
+                    {% if not selected_status %}
+                        selected
+                    {% endif %}
+                >
+                    All statuses
+                </option>
+
+                <option
+                    value="active"
+                    {% if selected_status == "active" %}
+                        selected
+                    {% endif %}
+                >
+                    Active
+                </option>
+
+                <option
+                    value="inactive"
+                    {% if selected_status == "inactive" %}
+                        selected
+                    {% endif %}
+                >
+                    Inactive
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="filter-actions">
+
+            <button
+                type="submit"
+                class="button button-primary"
+            >
+                Apply Filters
+            </button>
+
+            <a
+                href="{{ url_for('admin.administrators') }}"
+                class="button button-secondary"
+            >
+                Clear
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<div class="section-card">
+
+    <div class="section-header">
+
+        <div>
+
+            <h2>
+                Administrator Accounts
+            </h2>
+
+            <p>
+                {% if administrators %}
+
+                Showing {{ administrators|length }} administrator account{% if administrators|length != 1 %}s{% endif %}.
+
+                {% else %}
+
+                No administrator accounts match the current filters.
+
+                {% endif %}
+            </p>
+
+        </div>
+
+    </div>
+
+
+    {% if administrators %}
+
+    <div class="administrator-table-wrapper">
+
+        <table class="administrator-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Administrator
+                    </th>
+
+                    <th>
+                        Church
+                    </th>
+
+                    <th>
+                        Role
+                    </th>
+
+                    <th>
+                        Status
+                    </th>
+
+                    <th>
+                        Created
+                    </th>
+
+                    <th>
+                        Action
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for administrator in administrators %}
+
+                <tr>
+
+                    <td>
+
+                        <div class="administrator-name">
+
+                            <div class="administrator-avatar">
+                                {{ administrator.name[:1]|upper }}
+                            </div>
+
+                            <div>
+
+                                <strong>
+                                    {{ administrator.name }}
+                                </strong>
+
+                                <span>
+                                    {{ administrator.email }}
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </td>
+
+
+                    <td>
+
+                        {% if administrator.church %}
+
+                        <div class="church-cell">
+
+                            <strong>
+                                {{ administrator.church.name }}
+                            </strong>
+
+                            <span>
+                                {{ administrator.church.location or "Location not provided" }}
+                            </span>
+
+                        </div>
+
+                        {% else %}
+
+                        <span class="muted">
+                            Not assigned
+                        </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        <span class="role-badge">
+                            {{ administrator.role }}
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+                        {% if administrator.is_active %}
+
+                        <span class="status-badge status-active">
+                            Active
+                        </span>
+
+                        {% else %}
+
+                        <span class="status-badge status-inactive">
+                            Inactive
+                        </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+                        {{ administrator.created_at.strftime("%d %b %Y") }}
+                    </td>
+
+
+                    <td>
+
+                        {% if administrator.church %}
+
+                        <a
+                            href="{{ url_for(
+                                'admin.manage_church',
+                                church_id=administrator.church.id
+                            ) }}"
+                            class="manage-link"
+                        >
+                            Manage
+                        </a>
+
+                        {% else %}
+
+                        <span class="muted">
+                            —
+                        </span>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    {% else %}
+
+    <div class="empty-state">
+
+        <div class="empty-icon">
+            A
+        </div>
+
+        <h3>
+            No administrators found
+        </h3>
+
+        <p>
+            Try changing your search or filters.
+        </p>
+
+        <a
+            href="{{ url_for('admin.administrators') }}"
+            class="button button-secondary"
+        >
+            Clear Filters
+        </a>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+
+<style>
+
+    .page-header {
+        margin-bottom: 26px;
+    }
+
+    .page-icon {
+        width: 48px;
+        height: 48px;
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background: #f0fdf4;
+        color: #166534;
+        font-size: 17px;
+        font-weight: 700;
+    }
+
+    .page-header h1 {
+        margin: 0 0 6px;
+        color: #111827;
+        font-size: 28px;
+    }
+
+    .page-header p {
+        margin: 0;
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+
+    .stat-card {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        min-width: 0;
+        padding: 20px;
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 13px;
+    }
+
+    .stat-icon {
+        width: 42px;
+        height: 42px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        background: #f3f4f6;
+        color: #374151;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .stat-label {
+        display: block;
+        margin-bottom: 4px;
+        color: #6b7280;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .stat-value {
+        display: block;
+        margin-bottom: 3px;
+        color: #111827;
+        font-size: 24px;
+        line-height: 1;
+    }
+
+    .stat-description {
+        display: block;
+        color: #9ca3af;
+        font-size: 11px;
+    }
+
+    .section-card {
+        margin-bottom: 20px;
+        padding: 24px;
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 20px;
+        margin-bottom: 20px;
+        padding-bottom: 18px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .section-header h2 {
+        margin: 0 0 5px;
+        color: #111827;
+        font-size: 19px;
+    }
+
+    .section-header p {
+        margin: 0;
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    .filter-form {
+        display: grid;
+        grid-template-columns: minmax(220px, 1.5fr) minmax(180px, 1fr) minmax(150px, 0.8fr) auto;
+        align-items: end;
+        gap: 14px;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        min-width: 0;
+    }
+
+    .filter-group label {
+        color: #374151;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .filter-group input,
+    .filter-group select {
+        width: 100%;
+        box-sizing: border-box;
+        min-height: 42px;
+        padding: 0 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 9px;
+        background: white;
+        color: #111827;
+        font-size: 13px;
+    }
+
+    .filter-group input:focus,
+    .filter-group select:focus {
+        outline: none;
+        border-color: #12372a;
+        box-shadow: 0 0 0 3px rgba(18, 55, 42, 0.08);
+    }
+
+    .filter-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        padding: 0 16px;
+        border: 1px solid transparent;
+        border-radius: 9px;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition: 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .button-primary {
+        background: #12372a;
+        color: white;
+    }
+
+    .button-primary:hover {
+        background: #0d2a20;
+    }
+
+    .button-secondary {
+        background: white;
+        color: #374151;
+        border-color: #d1d5db;
+    }
+
+    .button-secondary:hover {
+        background: #f9fafb;
+    }
+
+    .administrator-table-wrapper {
+        overflow-x: auto;
+    }
+
+    .administrator-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 820px;
+    }
+
+    .administrator-table th {
+        padding: 11px 12px;
+        border-bottom: 1px solid #e5e7eb;
+        color: #6b7280;
+        font-size: 11px;
+        font-weight: 700;
+        text-align: left;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+
+    .administrator-table td {
+        padding: 15px 12px;
+        border-bottom: 1px solid #f3f4f6;
+        color: #4b5563;
+        font-size: 13px;
+        vertical-align: middle;
+    }
+
+    .administrator-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .administrator-name {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .administrator-avatar {
+        width: 38px;
+        height: 38px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: #f0fdf4;
+        color: #166534;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .administrator-name strong {
+        display: block;
+        margin-bottom: 3px;
+        color: #111827;
+        font-size: 13px;
+    }
+
+    .administrator-name span {
+        display: block;
+        color: #6b7280;
+        font-size: 12px;
+        word-break: break-word;
+    }
+
+    .church-cell {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+    }
+
+    .church-cell strong {
+        color: #374151;
+        font-size: 13px;
+    }
+
+    .church-cell span {
+        color: #9ca3af;
+        font-size: 11px;
+    }
+
+    .role-badge {
+        display: inline-flex;
+        padding: 5px 9px;
+        border-radius: 7px;
+        background: #f3f4f6;
+        color: #374151;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 5px 10px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .status-active {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .status-inactive {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .manage-link {
+        color: #12372a;
+        text-decoration: none;
+        font-weight: 700;
+    }
+
+    .manage-link:hover {
+        text-decoration: underline;
+    }
+
+    .muted {
+        color: #9ca3af;
+    }
+
+    .empty-state {
+        padding: 38px 20px;
+        text-align: center;
+    }
+
+    .empty-icon {
+        width: 46px;
+        height: 46px;
+        margin: 0 auto 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 11px;
+        background: #f3f4f6;
+        color: #374151;
+        font-weight: 700;
+    }
+
+    .empty-state h3 {
+        margin: 0 0 6px;
+        color: #111827;
+        font-size: 17px;
+    }
+
+    .empty-state p {
+        margin: 0 0 18px;
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    @media (max-width: 1000px) {
+
+        .filter-form {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .filter-actions {
+            grid-column: 1 / -1;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+    }
+
+    @media (max-width: 700px) {
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .section-card {
+            padding: 20px;
+        }
+
+        .filter-form {
+            grid-template-columns: 1fr;
+        }
+
+        .filter-actions {
+            grid-column: auto;
+        }
+
+        .filter-actions .button {
+            flex: 1;
+        }
+
+    }
+
+</style>
+
+{% endblock %}

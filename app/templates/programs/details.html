@@ -1,0 +1,877 @@
+{% extends "base.html" %}
+
+{% block title %}{{ program.name }} | Programs{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+
+        <div class="breadcrumb">
+
+            <a href="{{ url_for('dashboard.programs') }}">
+                Programs
+            </a>
+
+            <span>›</span>
+
+            <span>{{ program.name }}</span>
+
+        </div>
+
+        <h1>{{ program.name }}</h1>
+
+        <p>
+            View and manage this church program or service.
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     PROGRAM SUMMARY
+===================================================== -->
+
+<div class="summary-card">
+
+    <div class="program-identity">
+
+        <div class="program-icon">
+            {{ program.name[:1].upper() }}
+        </div>
+
+        <div>
+
+            <h2>
+                {{ program.name }}
+            </h2>
+
+            <p>
+                Church program / service
+            </p>
+
+        </div>
+
+    </div>
+
+
+    {% if program.is_active %}
+
+        <span class="status status-active">
+            Active
+        </span>
+
+    {% else %}
+
+        <span class="status status-inactive">
+            Inactive
+        </span>
+
+    {% endif %}
+
+</div>
+
+
+<!-- =====================================================
+     PROGRAM INFORMATION
+===================================================== -->
+
+<div class="content-card">
+
+    <div class="card-header">
+
+        <div>
+
+            <h2>Program Information</h2>
+
+            <p>
+                Details about when and where this program takes place.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="details-grid">
+
+
+        <!-- DAY -->
+
+        <div class="detail-box">
+
+            <div class="detail-label">
+                Day of the Week
+            </div>
+
+            <div class="detail-value">
+
+                {% if program.day_of_week %}
+
+                    {{ program.day_of_week }}
+
+                {% else %}
+
+                    Not specified
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <!-- START TIME -->
+
+        <div class="detail-box">
+
+            <div class="detail-label">
+                Start Time
+            </div>
+
+            <div class="detail-value">
+
+                {% if program.start_time %}
+
+                    {{ program.start_time.strftime("%I:%M %p") }}
+
+                {% else %}
+
+                    Not specified
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <!-- LOCATION -->
+
+        <div class="detail-box">
+
+            <div class="detail-label">
+                Location
+            </div>
+
+            <div class="detail-value">
+
+                {% if program.location %}
+
+                    {{ program.location }}
+
+                {% else %}
+
+                    Not specified
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <!-- STATUS -->
+
+        <div class="detail-box">
+
+            <div class="detail-label">
+                Status
+            </div>
+
+            <div class="detail-value">
+
+                {% if program.is_active %}
+
+                    Active
+
+                {% else %}
+
+                    Inactive
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     DESCRIPTION
+===================================================== -->
+
+<div class="content-card">
+
+    <div class="card-header">
+
+        <div>
+
+            <h2>Description</h2>
+
+            <p>
+                Additional information about this program.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="description-box">
+
+        {% if program.description %}
+
+            {{ program.description }}
+
+        {% else %}
+
+            <span class="empty-description">
+                No description has been provided for this program.
+            </span>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     REMINDER INFORMATION
+===================================================== -->
+
+<div class="content-card">
+
+    <div class="info-box">
+
+        <div class="info-icon">
+            💡
+        </div>
+
+        <div>
+
+            <strong>
+                Reminder system
+            </strong>
+
+            <p>
+                This program is stored in ChurchConnect and can be
+                connected to automated SMS reminders. For example,
+                a Monday evening reminder can be associated with
+                a Tuesday Dawn Service.
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     PROGRAM ACTIONS
+===================================================== -->
+
+<div class="content-card">
+
+    <div class="card-header">
+
+        <div>
+
+            <h2>Program Actions</h2>
+
+            <p>
+                Manage the status or details of this program.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="actions">
+
+
+        <!-- BACK -->
+
+        <a
+            href="{{ url_for('dashboard.programs') }}"
+            class="btn btn-secondary"
+        >
+            ← Back to Programs
+        </a>
+
+
+        <!-- ACTIVATE / DEACTIVATE -->
+
+        {% if program.is_active %}
+
+            <form
+                method="POST"
+                action="{{ url_for('dashboard.toggle_program_status', program_id=program.id) }}"
+                class="action-form"
+            >
+
+                <button
+                    type="submit"
+                    class="btn btn-warning"
+                >
+                    Deactivate Program
+                </button>
+
+            </form>
+
+        {% else %}
+
+            <form
+                method="POST"
+                action="{{ url_for('dashboard.toggle_program_status', program_id=program.id) }}"
+                class="action-form"
+            >
+
+                <button
+                    type="submit"
+                    class="btn btn-success"
+                >
+                    Activate Program
+                </button>
+
+            </form>
+
+        {% endif %}
+
+
+        <!-- EDIT -->
+
+        <a
+            href="{{ url_for('dashboard.edit_program', program_id=program.id) }}"
+            class="btn btn-primary"
+        >
+            Edit Program
+        </a>
+
+    </div>
+
+
+    <!-- =================================================
+         DELETE SECTION
+    ================================================== -->
+
+    <div class="danger-section">
+
+        <div class="danger-content">
+
+            <div>
+
+                <h3 class="danger-title">
+                    Delete this program
+                </h3>
+
+                <p class="danger-text">
+                    Permanently remove
+                    <strong>{{ program.name }}</strong>
+                    from your church's programs.
+                    This action cannot be undone.
+                </p>
+
+            </div>
+
+
+            <form
+                method="POST"
+                action="{{ url_for('dashboard.delete_program', program_id=program.id) }}"
+                class="delete-form"
+            >
+
+                <button
+                    type="submit"
+                    class="btn btn-danger"
+                >
+                    Delete Program
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<style>
+
+/* =====================================================
+   PAGE HEADER
+===================================================== */
+
+.page-header {
+    margin-bottom: 25px;
+}
+
+.page-header h1 {
+    margin: 8px 0 6px;
+    font-size: 30px;
+    letter-spacing: -0.4px;
+}
+
+.page-header p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+
+/* =====================================================
+   BREADCRUMB
+===================================================== */
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #8a958f;
+}
+
+.breadcrumb a {
+    color: #12372a;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+
+/* =====================================================
+   SUMMARY CARD
+===================================================== */
+
+.summary-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+
+    padding: 24px;
+    margin-bottom: 20px;
+
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
+}
+
+.program-identity {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.program-icon {
+    width: 58px;
+    height: 58px;
+
+    border-radius: 15px;
+
+    background: #edf6f1;
+    color: #12372a;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 25px;
+    font-weight: 750;
+
+    flex-shrink: 0;
+}
+
+.program-identity h2 {
+    margin: 0 0 5px;
+    font-size: 19px;
+}
+
+.program-identity p {
+    margin: 0;
+    color: #7b8781;
+    font-size: 13px;
+}
+
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+.status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 30px;
+    padding: 0 12px;
+
+    border-radius: 999px;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+.status-active {
+    background: #e8f6ed;
+    color: #23703e;
+}
+
+.status-inactive {
+    background: #f1f2f2;
+    color: #6e7773;
+}
+
+
+/* =====================================================
+   CONTENT CARDS
+===================================================== */
+
+.content-card {
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+
+    padding: 25px;
+    margin-bottom: 20px;
+
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
+}
+
+.card-header {
+    margin-bottom: 22px;
+}
+
+.card-header h2 {
+    margin: 0;
+    font-size: 19px;
+}
+
+.card-header p {
+    margin: 5px 0 0;
+    color: #6b7280;
+    font-size: 13px;
+}
+
+
+/* =====================================================
+   DETAILS GRID
+===================================================== */
+
+.details-grid {
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 16px;
+}
+
+.detail-box {
+    border: 1px solid #e7ede9;
+
+    border-radius: 11px;
+
+    padding: 16px;
+
+    background: #fbfcfb;
+}
+
+.detail-label {
+    color: #7d8a84;
+
+    font-size: 12px;
+    font-weight: 650;
+
+    margin-bottom: 7px;
+}
+
+.detail-value {
+    color: #24352d;
+
+    font-size: 15px;
+    font-weight: 650;
+}
+
+
+/* =====================================================
+   DESCRIPTION
+===================================================== */
+
+.description-box {
+    border: 1px solid #e7ede9;
+
+    border-radius: 11px;
+
+    padding: 18px;
+
+    background: #fbfcfb;
+
+    color: #53635b;
+
+    font-size: 14px;
+    line-height: 1.7;
+
+    white-space: pre-line;
+}
+
+.empty-description {
+    color: #89938e;
+    font-style: italic;
+}
+
+
+/* =====================================================
+   INFORMATION BOX
+===================================================== */
+
+.info-box {
+    display: flex;
+
+    gap: 12px;
+
+    padding: 16px;
+
+    border-radius: 11px;
+
+    background: #edf6f1;
+
+    border: 1px solid #d8e9df;
+
+    color: #456056;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+}
+
+.info-icon {
+    font-size: 19px;
+
+    flex-shrink: 0;
+}
+
+.info-box strong {
+    color: #12372a;
+}
+
+.info-box p {
+    margin: 4px 0 0;
+}
+
+
+/* =====================================================
+   ACTIONS
+===================================================== */
+
+.actions {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    flex-wrap: wrap;
+}
+
+.action-form,
+.delete-form {
+    margin: 0;
+}
+
+.btn {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-height: 44px;
+
+    padding: 0 17px;
+
+    border-radius: 9px;
+
+    font-family: inherit;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.btn-secondary {
+    background: #ffffff;
+
+    border: 1px solid #dfe7e2;
+
+    color: #304139;
+}
+
+.btn-secondary:hover {
+    background: #f8faf9;
+}
+
+.btn-primary {
+    background: #12372a;
+
+    border: 1px solid #12372a;
+
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background: #0d2b20;
+}
+
+.btn-warning {
+    background: #fff8e8;
+
+    border: 1px solid #f0dfb0;
+
+    color: #8a6500;
+}
+
+.btn-warning:hover {
+    background: #fff3d6;
+}
+
+.btn-success {
+    background: #e8f6ed;
+
+    border: 1px solid #cfe8d8;
+
+    color: #23703e;
+}
+
+.btn-success:hover {
+    background: #ddf2e4;
+}
+
+.btn-danger {
+    background: #fff5f5;
+
+    border: 1px solid #efcaca;
+
+    color: #a12d2d;
+}
+
+.btn-danger:hover {
+    background: #ffebeb;
+
+    border-color: #e5b5b5;
+}
+
+
+/* =====================================================
+   DELETE SECTION
+===================================================== */
+
+.danger-section {
+    margin-top: 28px;
+
+    padding-top: 25px;
+
+    border-top: 1px solid #e8ece9;
+}
+
+.danger-content {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+}
+
+.danger-title {
+    margin: 0 0 5px;
+
+    color: #7c2828;
+
+    font-size: 15px;
+
+    font-weight: 700;
+}
+
+.danger-text {
+    margin: 0;
+
+    color: #7f8582;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 700px) {
+
+    .summary-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .content-card,
+    .summary-card {
+        padding: 20px;
+    }
+
+    .details-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .actions .btn,
+    .action-form,
+    .action-form .btn {
+        width: 100%;
+    }
+
+    .danger-content {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .delete-form,
+    .delete-form .btn {
+        width: 100%;
+    }
+
+}
+
+</style>
+
+{% endblock %}

@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}ChurchConnect{% endblock %}</title>
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --background: #f5f7fb;
+            --surface: #ffffff;
+            --border: #e5e7eb;
+            --text: #111827;
+            --muted: #6b7280;
+            --sidebar: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI",
+                         Roboto, Helvetica, Arial, sans-serif;
+            background: var(--background);
+            color: var(--text);
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        button,
+        input,
+        select,
+        textarea {
+            font-family: inherit;
+        }
+
+        .app-shell {
+            min-height: 100vh;
+        }
+
+        /* =========================
+           SIDEBAR
+        ========================= */
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100vh;
+            background: var(--sidebar);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .brand {
+            height: 72px;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 17px;
+        }
+
+        .brand-text h1 {
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .brand-text span {
+            display: block;
+            margin-top: 3px;
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .sidebar-content {
+            flex: 1;
+            padding: 20px 14px;
+            overflow-y: auto;
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .nav-section-title {
+            padding: 0 12px;
+            margin-bottom: 8px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #9ca3af;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 10px 12px;
+            margin-bottom: 3px;
+            border-radius: 8px;
+            color: #4b5563;
+            font-size: 14px;
+            font-weight: 500;
+            transition: 0.2s ease;
+        }
+
+        .nav-item:hover {
+            background: #f3f4f6;
+            color: var(--text);
+        }
+
+        .nav-item.active {
+            background: #eff6ff;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .nav-icon {
+            width: 20px;
+            text-align: center;
+            font-size: 15px;
+        }
+
+        .user-area {
+            padding: 14px;
+            border-top: 1px solid var(--border);
+        }
+
+        .user-card {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px;
+            border-radius: 9px;
+        }
+
+        .user-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: #dbeafe;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .user-info {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-role {
+            margin-top: 2px;
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .logout {
+            color: #6b7280;
+            font-size: 16px;
+        }
+
+        .logout:hover {
+            color: #dc2626;
+        }
+
+        /* =========================
+           MAIN AREA
+        ========================= */
+
+        .main-wrapper {
+            margin-left: 250px;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            height: 72px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+        }
+
+        .church-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .notification {
+            width: 36px;
+            height: 36px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+        }
+
+        .content {
+            padding: 32px;
+        }
+
+        /* =========================
+           FLASH MESSAGES
+        ========================= */
+
+        .flash-container {
+            margin-bottom: 20px;
+        }
+
+        .flash-message {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            border: 1px solid;
+        }
+
+        .flash-success {
+            border-color: #bbf7d0;
+            background: #f0fdf4;
+            color: #166534;
+        }
+
+        .flash-error {
+            border-color: #fecaca;
+            background: #fef2f2;
+            color: #991b1b;
+        }
+
+        .flash-warning {
+            border-color: #fde68a;
+            background: #fffbeb;
+            color: #92400e;
+        }
+
+        .flash-info {
+            border-color: #bfdbfe;
+            background: #eff6ff;
+            color: #1e40af;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 900px) {
+            .sidebar {
+                width: 220px;
+            }
+
+            .main-wrapper {
+                margin-left: 220px;
+            }
+
+            .content {
+                padding: 24px;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .sidebar {
+                width: 70px;
+            }
+
+            .brand {
+                justify-content: center;
+                padding: 0;
+            }
+
+            .brand-text,
+            .nav-section-title,
+            .nav-item span:not(.nav-icon),
+            .user-info,
+            .logout {
+                display: none;
+            }
+
+            .sidebar-content {
+                padding: 20px 10px;
+            }
+
+            .nav-item {
+                justify-content: center;
+            }
+
+            .user-card {
+                justify-content: center;
+            }
+
+            .main-wrapper {
+                margin-left: 70px;
+            }
+
+            .topbar {
+                padding: 0 18px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app-shell">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="brand">
+
+            <div class="brand-icon">
+                C
+            </div>
+
+            <div class="brand-text">
+                <h1>ChurchConnect</h1>
+
+                {% if current_user.is_system_admin %}
+                    <span>System Administration</span>
+                {% else %}
+                    <span>Communication Platform</span>
+                {% endif %}
+            </div>
+
+        </div>
+
+        <div class="sidebar-content">
+
+            {% if current_user.is_system_admin %}
+
+                <!-- SYSTEM ADMIN SIDEBAR -->
+
+                <div class="nav-section">
+
+                    <div class="nav-section-title">
+                        Platform
+                    </div>
+
+                    <a
+                        href="{{ url_for('admin.dashboard') }}"
+                        class="nav-item"
+                    >
+                        <span class="nav-icon">⌂</span>
+                        <span>Church Management</span>
+                    </a>
+
+                </div>
+
+                <div class="nav-section">
+
+                    <div class="nav-section-title">
+                        Administration
+                    </div>
+
+                    <a
+    href="{{ url_for('admin.administrators') }}"
+    class="nav-item"
+>
+    <span class="nav-icon">♟</span>
+    <span>Administrators</span>
+</a>
+
+                </div>
+
+            {% else %}
+
+                <!-- CHURCH SIDEBAR -->
+
+                <div class="nav-section">
+
+                    <div class="nav-section-title">
+                        Workspace
+                    </div>
+
+                    <a
+                        href="{{ url_for('dashboard.home') }}"
+                        class="nav-item"
+                    >
+                        <span class="nav-icon">⌂</span>
+                        <span>Overview</span>
+                    </a>
+
+                    <a
+                        href="{{ url_for('dashboard.members') }}"
+                        class="nav-item"
+                    >
+                        <span class="nav-icon">♟</span>
+                        <span>Members</span>
+                    </a>
+
+                    <a
+                        href="{{ url_for('dashboard.programs') }}"
+                        class="nav-item"
+                    >
+                        <span class="nav-icon">▣</span>
+                        <span>Programs</span>
+                    </a>
+
+                    <a
+                        href="{{ url_for('dashboard.reminders') }}"
+                        class="nav-item"
+                    >
+                        <span class="nav-icon">◷</span>
+                        <span>Reminders</span>
+                    </a>
+
+                    <a
+                        href="{{ url_for('dashboard.campaigns') }}"
+                        class="nav-item"
+                    >
+                        <span class="nav-icon">✉</span>
+                        <span>Campaigns</span>
+                    </a>
+
+                </div>
+
+                <div class="nav-section">
+
+                    <div class="nav-section-title">
+                        Insights
+                    </div>
+
+                    <a
+                        href="{{ url_for('dashboard.messages') }}"
+                        class="nav-item"
+                    >
+                        <span class="nav-icon">...</span>
+                        <span>Messages</span>
+                    </a>
+
+                    <a
+                        href="{{ url_for('dashboard.reports') }}"
+                        class="nav-item"
+                    >
+                        <span class="nav-icon">▥</span>
+                        <span>Reports</span>
+                    </a>
+
+                </div>
+
+                <div class="nav-section">
+
+                    <div class="nav-section-title">
+                        Administration
+                    </div>
+
+                    <a
+                        href="{{ url_for('dashboard.settings') }}"
+                        class="nav-item"
+                    >
+                        <span class="nav-icon">⚙</span>
+                        <span>Settings</span>
+                    </a>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+        <!-- USER -->
+
+        <div class="user-area">
+
+            <div class="user-card">
+
+                <div class="user-avatar">
+                    {{ current_user.name[0]|upper }}
+                </div>
+
+                <div class="user-info">
+
+                    <div class="user-name">
+                        {{ current_user.name }}
+                    </div>
+
+                    <div class="user-role">
+                        {{ current_user.role }}
+                    </div>
+
+                </div>
+
+                <a
+                    href="{{ url_for('auth.logout') }}"
+                    class="logout"
+                    title="Logout"
+                >
+                    ↪
+                </a>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+
+    <div class="main-wrapper">
+
+        <header class="topbar">
+
+            {% if current_user.is_system_admin %}
+
+                <div class="church-name">
+                    System Administration
+                </div>
+
+            {% else %}
+
+                <div class="church-name">
+                    {{ current_user.church.name }}
+                </div>
+
+            {% endif %}
+
+            <div class="topbar-right">
+
+                <div class="notification">
+                    ♧
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <main class="content">
+
+            <!-- FLASH MESSAGES -->
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+
+                {% if messages %}
+
+                    <div class="flash-container">
+
+                        {% for category, message in messages %}
+
+                            <div class="
+                                flash-message
+                                {% if category == 'success' %}
+                                    flash-success
+                                {% elif category == 'error' %}
+                                    flash-error
+                                {% elif category == 'warning' %}
+                                    flash-warning
+                                {% else %}
+                                    flash-info
+                                {% endif %}
+                            ">
+                                {{ message }}
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% endif %}
+
+            {% endwith %}
+
+
+            <!-- PAGE CONTENT -->
+
+            {% block content %}
+            {% endblock %}
+
+        </main>
+
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1022 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Church Management
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+        <div class="breadcrumb">
+            System Administration / Church Management
+        </div>
+
+        <h1>
+            Church Management
+        </h1>
+
+        <p>
+            Manage churches, administrators, members, and access across ChurchConnect.
+        </p>
+    </div>
+
+    <div class="page-actions">
+
+        <a
+            href="{{ url_for('admin.add_church') }}"
+            class="button button-primary"
+        >
+            Add Church
+        </a>
+
+    </div>
+
+</div>
+
+
+<div class="stats-grid">
+
+    <div class="stat-card">
+        <div class="stat-label">
+            Total Churches
+        </div>
+
+        <div class="stat-value">
+            {{ total_churches }}
+        </div>
+
+        <div class="stat-note">
+            All registered churches
+        </div>
+    </div>
+
+
+    <div class="stat-card">
+        <div class="stat-label">
+            Active Churches
+        </div>
+
+        <div class="stat-value">
+            {{ active_churches }}
+        </div>
+
+        <div class="stat-note">
+            Currently available
+        </div>
+    </div>
+
+
+    <div class="stat-card">
+        <div class="stat-label">
+            Administrators
+        </div>
+
+        <div class="stat-value">
+            {{ total_administrators }}
+        </div>
+
+        <div class="stat-note">
+            Church administrator accounts
+        </div>
+    </div>
+
+
+    <div class="stat-card">
+        <div class="stat-label">
+            Total Members
+        </div>
+
+        <div class="stat-value">
+            {{ total_members }}
+        </div>
+
+        <div class="stat-note">
+            Across all churches
+        </div>
+    </div>
+
+</div>
+
+
+<div class="stats-grid secondary-stats">
+
+    <div class="stat-card">
+        <div class="stat-label">
+            Inactive Churches
+        </div>
+
+        <div class="stat-value">
+            {{ inactive_churches }}
+        </div>
+
+        <div class="stat-note">
+            Currently disabled
+        </div>
+    </div>
+
+
+    <div class="stat-card">
+        <div class="stat-label">
+            Active Administrators
+        </div>
+
+        <div class="stat-value">
+            {{ active_administrators }}
+        </div>
+
+        <div class="stat-note">
+            Accounts with access
+        </div>
+    </div>
+
+
+    <div class="stat-card">
+        <div class="stat-label">
+            Inactive Administrators
+        </div>
+
+        <div class="stat-value">
+            {{ inactive_administrators }}
+        </div>
+
+        <div class="stat-note">
+            Disabled accounts
+        </div>
+    </div>
+
+
+    <div class="stat-card">
+        <div class="stat-label">
+            Messages Sent
+        </div>
+
+        <div class="stat-value">
+            {{ sent_messages }}
+        </div>
+
+        <div class="stat-note">
+            Of {{ total_messages }} recorded messages
+        </div>
+    </div>
+
+</div>
+
+
+<div class="section-card">
+
+    <div class="section-header">
+
+        <div>
+            <h2>
+                Find Churches
+            </h2>
+
+            <p>
+                Search and filter registered churches.
+            </p>
+        </div>
+
+    </div>
+
+
+    <form
+        method="GET"
+        action="{{ url_for('admin.dashboard') }}"
+        class="filter-form"
+    >
+
+        <div class="form-group">
+
+            <label for="search">
+                Search
+            </label>
+
+            <input
+                type="text"
+                id="search"
+                name="search"
+                value="{{ search }}"
+                placeholder="Church name, location, phone or email"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="status">
+                Status
+            </label>
+
+            <select
+                id="status"
+                name="status"
+            >
+
+                <option value="">
+                    All Churches
+                </option>
+
+                <option
+                    value="active"
+                    {% if selected_status == "active" %}
+                        selected
+                    {% endif %}
+                >
+                    Active
+                </option>
+
+                <option
+                    value="inactive"
+                    {% if selected_status == "inactive" %}
+                        selected
+                    {% endif %}
+                >
+                    Inactive
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="filter-actions">
+
+            <button
+                type="submit"
+                class="button button-primary"
+            >
+                Apply Filters
+            </button>
+
+
+            <a
+                href="{{ url_for('admin.dashboard') }}"
+                class="button button-secondary"
+            >
+                Clear
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<div class="section-card">
+
+    <div class="section-header">
+
+        <div>
+            <h2>
+                Church Management
+            </h2>
+
+            <p>
+                {{ church_rows|length }} church{% if church_rows|length != 1 %}es{% endif %} shown.
+            </p>
+        </div>
+
+    </div>
+
+
+    {% if church_rows %}
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Church
+                        </th>
+
+                        <th>
+                            Location
+                        </th>
+
+                        <th>
+                            Contact
+                        </th>
+
+                        <th>
+                            Administrators
+                        </th>
+
+                        <th>
+                            Members
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Created
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for row in church_rows %}
+
+                        {% set church = row.church %}
+
+                        <tr>
+
+                            <td>
+
+                                <div class="table-primary">
+                                    {{ church.name }}
+                                </div>
+
+                                {% if church.email %}
+
+                                    <div class="table-secondary">
+                                        {{ church.email }}
+                                    </div>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+
+                                {% if church.location %}
+
+                                    {{ church.location }}
+
+                                {% else %}
+
+                                    <span class="muted">
+                                        Not provided
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+
+                                {% if church.phone %}
+
+                                    {{ church.phone }}
+
+                                {% else %}
+
+                                    <span class="muted">
+                                        Not provided
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="count-badge">
+                                    {{ row.administrator_count }}
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="count-badge">
+                                    {{ row.member_count }}
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                {% if church.is_active %}
+
+                                    <span class="status-badge status-active">
+                                        Active
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="status-badge status-inactive">
+                                        Inactive
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+
+                                {{ church.created_at.strftime("%d %b %Y") }}
+
+                            </td>
+
+
+                            <td>
+
+                                <a
+                                    href="{{ url_for(
+                                        'admin.manage_church',
+                                        church_id=church.id
+                                    ) }}"
+                                    class="table-action"
+                                >
+                                    Manage
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <div class="empty-icon">
+                C
+            </div>
+
+            <h3>
+                No churches found
+            </h3>
+
+            <p>
+                No churches match the current search or filter.
+            </p>
+
+            <a
+                href="{{ url_for('admin.dashboard') }}"
+                class="button button-secondary"
+            >
+                Clear Filters
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+
+<div class="section-card">
+
+    <div class="section-header">
+
+        <div>
+            <h2>
+                Recent Administrators
+            </h2>
+
+            <p>
+                Recently created church administrator accounts.
+            </p>
+        </div>
+
+        <a
+            href="{{ url_for('admin.administrators') }}"
+            class="table-action"
+        >
+            View All
+        </a>
+
+    </div>
+
+
+    {% if recent_administrators %}
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Administrator
+                        </th>
+
+                        <th>
+                            Church
+                        </th>
+
+                        <th>
+                            Role
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Created
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for administrator in recent_administrators %}
+
+                        <tr>
+
+                            <td>
+
+                                <div class="table-primary">
+                                    {{ administrator.name }}
+                                </div>
+
+                                <div class="table-secondary">
+                                    {{ administrator.email }}
+                                </div>
+
+                            </td>
+
+
+                            <td>
+
+                                {% if administrator.church %}
+
+                                    {{ administrator.church.name }}
+
+                                {% else %}
+
+                                    <span class="muted">
+                                        No church
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+                                {{ administrator.role }}
+                            </td>
+
+
+                            <td>
+
+                                {% if administrator.is_active %}
+
+                                    <span class="status-badge status-active">
+                                        Active
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="status-badge status-inactive">
+                                        Inactive
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+
+                                {{ administrator.created_at.strftime("%d %b %Y") }}
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <h3>
+                No administrators yet
+            </h3>
+
+            <p>
+                Church administrator accounts will appear here.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+
+<div class="section-card">
+
+    <div class="section-header">
+
+        <div>
+            <h2>
+                Platform Status
+            </h2>
+
+            <p>
+                Current ChurchConnect system status.
+            </p>
+        </div>
+
+    </div>
+
+
+    <div class="status-panel">
+
+        <div class="status-indicator"></div>
+
+        <div>
+
+            <div class="status-title">
+                ChurchConnect is operational
+            </div>
+
+            <div class="status-text">
+                {{ active_churches }} active churches,
+                {{ active_administrators }} active administrators,
+                and {{ active_members }} active members.
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<style>
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 24px;
+        margin-bottom: 28px;
+    }
+
+    .breadcrumb {
+        font-size: 13px;
+        color: #6b7280;
+        margin-bottom: 8px;
+    }
+
+    .page-header h1 {
+        margin: 0 0 8px;
+    }
+
+    .page-header p {
+        margin: 0;
+        color: #6b7280;
+    }
+
+    .page-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        padding: 0 16px;
+        border-radius: 10px;
+        text-decoration: none;
+        border: 1px solid transparent;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .button-primary {
+        background: #12372a;
+        color: white;
+    }
+
+    .button-secondary {
+        background: white;
+        color: #374151;
+        border-color: #d1d5db;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+        margin-bottom: 16px;
+    }
+
+    .secondary-stats {
+        margin-bottom: 28px;
+    }
+
+    .stat-card {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        padding: 20px;
+    }
+
+    .stat-label {
+        font-size: 13px;
+        color: #6b7280;
+        margin-bottom: 8px;
+    }
+
+    .stat-value {
+        font-size: 28px;
+        font-weight: 700;
+        color: #111827;
+    }
+
+    .stat-note {
+        font-size: 12px;
+        color: #9ca3af;
+        margin-top: 6px;
+    }
+
+    .section-card {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        padding: 22px;
+        margin-bottom: 20px;
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+
+    .section-header h2 {
+        margin: 0 0 5px;
+        font-size: 18px;
+    }
+
+    .section-header p {
+        margin: 0;
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    .filter-form {
+        display: grid;
+        grid-template-columns: 2fr 1fr auto;
+        gap: 16px;
+        align-items: end;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+    .form-group label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #374151;
+    }
+
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        min-height: 44px;
+        padding: 0 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 9px;
+        background: white;
+        color: #111827;
+        font-size: 14px;
+        box-sizing: border-box;
+    }
+
+    .filter-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 900px;
+    }
+
+    th {
+        text-align: left;
+        font-size: 12px;
+        color: #6b7280;
+        font-weight: 600;
+        padding: 12px;
+        border-bottom: 1px solid #e5e7eb;
+        white-space: nowrap;
+    }
+
+    td {
+        padding: 15px 12px;
+        border-bottom: 1px solid #f0f1f3;
+        font-size: 14px;
+        color: #374151;
+        vertical-align: middle;
+    }
+
+    tr:last-child td {
+        border-bottom: none;
+    }
+
+    .table-primary {
+        font-weight: 600;
+        color: #111827;
+    }
+
+    .table-secondary {
+        font-size: 12px;
+        color: #6b7280;
+        margin-top: 3px;
+    }
+
+    .muted {
+        color: #9ca3af;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 5px 9px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .status-active {
+        background: #ecfdf3;
+        color: #047857;
+    }
+
+    .status-inactive {
+        background: #f3f4f6;
+        color: #6b7280;
+    }
+
+    .count-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 30px;
+        height: 30px;
+        padding: 0 8px;
+        border-radius: 8px;
+        background: #f3f4f6;
+        color: #374151;
+        font-weight: 600;
+        font-size: 13px;
+    }
+
+    .table-action {
+        color: #12372a;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: #6b7280;
+    }
+
+    .empty-state h3 {
+        margin: 10px 0 6px;
+        color: #111827;
+    }
+
+    .empty-state p {
+        margin: 0 0 18px;
+    }
+
+    .empty-icon {
+        width: 44px;
+        height: 44px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background: #f0fdf4;
+        color: #12372a;
+        font-weight: 700;
+    }
+
+    .status-panel {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 16px;
+        background: #f8faf9;
+        border: 1px solid #e2e8e5;
+        border-radius: 12px;
+    }
+
+    .status-indicator {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #16a34a;
+        flex-shrink: 0;
+    }
+
+    .status-title {
+        font-weight: 600;
+        color: #111827;
+    }
+
+    .status-text {
+        font-size: 13px;
+        color: #6b7280;
+        margin-top: 3px;
+    }
+
+    @media (max-width: 1000px) {
+
+        .stats-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .filter-form {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .filter-actions {
+            grid-column: 1 / -1;
+        }
+
+    }
+
+    @media (max-width: 700px) {
+
+        .page-header {
+            flex-direction: column;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .filter-form {
+            grid-template-columns: 1fr;
+        }
+
+        .filter-actions {
+            grid-column: auto;
+        }
+
+    }
+
+</style>
+
+{% endblock %}

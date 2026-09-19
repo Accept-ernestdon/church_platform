@@ -1,0 +1,421 @@
+{% extends "base.html" %}
+
+{% block title %}Add Church{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+
+        <h1>Add Church</h1>
+
+        <p>
+            Create a church and its administrator account.
+        </p>
+
+    </div>
+
+</div>
+
+
+<form
+    method="POST"
+    class="form-card"
+>
+
+    <div class="form-section">
+
+        <h2>Church Information</h2>
+
+        <p class="section-description">
+            Enter the basic information for the church.
+        </p>
+
+
+        <div class="form-grid">
+
+            <div class="form-group full-width">
+
+                <label for="church_name">
+                    Church Name
+                </label>
+
+                <input
+                    type="text"
+                    id="church_name"
+                    name="church_name"
+                    placeholder="e.g. Grace Community Church"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="location">
+                    Location
+                </label>
+
+                <input
+                    type="text"
+                    id="location"
+                    name="location"
+                    placeholder="e.g. Accra, Ghana"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="phone">
+                    Phone
+                </label>
+
+                <input
+                    type="text"
+                    id="phone"
+                    name="phone"
+                    placeholder="e.g. 0240000000"
+                >
+
+            </div>
+
+
+            <div class="form-group full-width">
+
+                <label for="church_email">
+                    Church Email
+                </label>
+
+                <input
+                    type="email"
+                    id="church_email"
+                    name="church_email"
+                    placeholder="church@example.com"
+                >
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="form-section">
+
+        <h2>Church Administrator</h2>
+
+        <p class="section-description">
+            These details will be used by the church administrator
+            to log in to ChurchConnect.
+        </p>
+
+
+        <div class="form-grid">
+
+            <div class="form-group full-width">
+
+                <label for="admin_name">
+                    Administrator Name
+                </label>
+
+                <input
+                    type="text"
+                    id="admin_name"
+                    name="admin_name"
+                    placeholder="e.g. John Mensah"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group full-width">
+
+                <label for="admin_email">
+                    Login Email
+                </label>
+
+                <input
+                    type="email"
+                    id="admin_email"
+                    name="admin_email"
+                    placeholder="admin@example.com"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="confirm_password">
+                    Confirm Password
+                </label>
+
+                <input
+                    type="password"
+                    id="confirm_password"
+                    name="confirm_password"
+                    required
+                >
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="form-actions">
+
+        <a
+            href="{{ url_for('admin.dashboard') }}"
+            class="secondary-button"
+        >
+            Cancel
+        </a>
+
+        <button
+            type="submit"
+            class="primary-button"
+        >
+            Create Church
+        </button>
+
+    </div>
+
+</form>
+
+
+<style>
+
+.page-header {
+
+    margin-bottom: 25px;
+
+}
+
+.page-header h1 {
+
+    margin: 0 0 6px;
+    font-size: 30px;
+    letter-spacing: -0.4px;
+
+}
+
+.page-header p {
+
+    margin: 0;
+    color: #6b7280;
+    font-size: 14px;
+
+}
+
+
+.form-card {
+
+    max-width: 900px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+
+}
+
+
+.form-section {
+
+    padding: 25px;
+    border-bottom: 1px solid #e5e7eb;
+
+}
+
+.form-section h2 {
+
+    margin: 0 0 6px;
+    color: #17221d;
+    font-size: 19px;
+
+}
+
+.section-description {
+
+    margin: 0 0 22px;
+    color: #6b7280;
+    font-size: 13px;
+    line-height: 1.5;
+
+}
+
+
+.form-grid {
+
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+
+}
+
+.form-group {
+
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+
+}
+
+.form-group.full-width {
+
+    grid-column: 1 / -1;
+
+}
+
+.form-group label {
+
+    color: #374151;
+    font-size: 13px;
+    font-weight: 600;
+
+}
+
+.form-group input {
+
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 13px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #17221d;
+    font-size: 13px;
+    outline: none;
+
+}
+
+.form-group input:focus {
+
+    border-color: #12372a;
+    box-shadow: 0 0 0 3px rgba(18, 55, 42, 0.08);
+
+}
+
+.form-group input::placeholder {
+
+    color: #9ca3af;
+
+}
+
+
+.form-actions {
+
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 20px 25px;
+    background: #fafcfb;
+
+}
+
+
+.primary-button,
+.secondary-button {
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 0 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    box-sizing: border-box;
+
+}
+
+
+.primary-button {
+
+    border: none;
+    background: #12372a;
+    color: #ffffff;
+
+}
+
+
+.primary-button:hover {
+
+    background: #0d2b20;
+
+}
+
+
+.secondary-button {
+
+    border: 1px solid #d1d5db;
+    background: #ffffff;
+    color: #374151;
+
+}
+
+
+.secondary-button:hover {
+
+    background: #f3f4f6;
+
+}
+
+
+@media (max-width: 700px) {
+
+    .form-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+    .form-group.full-width {
+
+        grid-column: auto;
+
+    }
+
+    .form-section {
+
+        padding: 20px;
+
+    }
+
+    .form-actions {
+
+        padding: 18px 20px;
+
+    }
+
+}
+
+</style>
+
+{% endblock %}

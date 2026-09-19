@@ -1,0 +1,965 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Reminder | ChurchConnect{% endblock %}
+
+{% block content %}
+
+<style>
+    .edit-page {
+        max-width: 900px;
+        margin: 0 auto;
+        padding-bottom: 50px;
+    }
+
+    .page-header {
+        margin-bottom: 25px;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 12px;
+        color: #68766f;
+        font-size: 12px;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .back-link:hover {
+        color: #12372a;
+    }
+
+    .page-title {
+        margin: 0;
+        color: #12372a;
+        font-size: 30px;
+        font-weight: 800;
+    }
+
+    .page-subtitle {
+        margin: 6px 0 0;
+        color: #718078;
+        font-size: 14px;
+    }
+
+    .form-card {
+        background: #ffffff;
+        border: 1px solid #e5ebe8;
+        border-radius: 18px;
+        padding: 28px;
+        box-shadow: 0 8px 30px rgba(18, 55, 42, 0.05);
+    }
+
+    .form-section {
+        margin-bottom: 30px;
+        padding-bottom: 25px;
+        border-bottom: 1px solid #edf1ef;
+    }
+
+    .form-section:last-of-type {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+    .section-title {
+        margin: 0 0 5px;
+        color: #12372a;
+        font-size: 16px;
+        font-weight: 800;
+    }
+
+    .section-description {
+        margin: 0 0 20px;
+        color: #7a8781;
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+    .form-group {
+        margin-bottom: 18px;
+    }
+
+    .form-group:last-child {
+        margin-bottom: 0;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 7px;
+        color: #36443e;
+        font-size: 12px;
+        font-weight: 750;
+    }
+
+    .required {
+        color: #b8322b;
+    }
+
+    .form-control {
+        width: 100%;
+        min-height: 43px;
+        box-sizing: border-box;
+        padding: 0 13px;
+        border: 1px solid #dfe7e3;
+        border-radius: 10px;
+        background: #ffffff;
+        color: #36443e;
+        font-family: inherit;
+        font-size: 13px;
+        outline: none;
+        transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    textarea.form-control {
+        min-height: 130px;
+        padding: 12px 13px;
+        resize: vertical;
+        line-height: 1.6;
+    }
+
+    .form-control:focus {
+        border-color: #12372a;
+        box-shadow: 0 0 0 3px rgba(18, 55, 42, 0.08);
+    }
+
+    .form-help {
+        margin-top: 6px;
+        color: #87938d;
+        font-size: 11px;
+        line-height: 1.5;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .radio-group {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .radio-card {
+        position: relative;
+    }
+
+    .radio-card input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .radio-card label {
+        display: block;
+        padding: 15px;
+        border: 1px solid #dfe7e3;
+        border-radius: 11px;
+        background: #ffffff;
+        cursor: pointer;
+        transition: all 0.18s ease;
+    }
+
+    .radio-card label:hover {
+        border-color: #bfcfc7;
+        background: #f8faf9;
+    }
+
+    .radio-card input:checked + label {
+        border-color: #12372a;
+        background: #f1f7f4;
+        box-shadow: 0 0 0 2px rgba(18, 55, 42, 0.06);
+    }
+
+    .radio-title {
+        display: block;
+        color: #36443e;
+        font-size: 13px;
+        font-weight: 750;
+    }
+
+    .radio-description {
+        display: block;
+        margin-top: 4px;
+        color: #87938d;
+        font-size: 11px;
+        line-height: 1.4;
+    }
+
+    .groups-panel,
+    .recurrence-panel {
+        display: none;
+        margin-top: 16px;
+        padding: 16px;
+        border: 1px solid #e5ebe8;
+        border-radius: 12px;
+        background: #f8faf9;
+    }
+
+    .groups-panel.show,
+    .recurrence-panel.show {
+        display: block;
+    }
+
+    .group-checkboxes {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 9px;
+    }
+
+    .group-checkbox {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 10px;
+        border-radius: 9px;
+        background: #ffffff;
+        border: 1px solid #e5ebe8;
+    }
+
+    .group-checkbox input {
+        accent-color: #12372a;
+    }
+
+    .group-checkbox label {
+        color: #405049;
+        font-size: 12px;
+        font-weight: 650;
+        cursor: pointer;
+    }
+
+    .checkbox-help {
+        margin-top: 10px;
+        color: #87938d;
+        font-size: 11px;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-top: 28px;
+        padding-top: 22px;
+        border-top: 1px solid #edf1ef;
+    }
+
+    .left-actions,
+    .right-actions {
+        display: flex;
+        gap: 9px;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        padding: 0 16px;
+        border-radius: 10px;
+        border: 1px solid transparent;
+        font-family: inherit;
+        font-size: 12px;
+        font-weight: 750;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.18s ease;
+    }
+
+    .btn-primary {
+        background: #12372a;
+        color: #ffffff;
+        border-color: #12372a;
+    }
+
+    .btn-primary:hover {
+        background: #0d2c21;
+    }
+
+    .btn-secondary {
+        background: #ffffff;
+        color: #405049;
+        border-color: #dfe7e3;
+    }
+
+    .btn-secondary:hover {
+        background: #f5f8f6;
+        border-color: #cbd8d2;
+        color: #12372a;
+    }
+
+    .flash-messages {
+        margin-bottom: 20px;
+    }
+
+    .flash-message {
+        padding: 13px 16px;
+        border-radius: 11px;
+        margin-bottom: 10px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .flash-success {
+        background: #edf8f1;
+        color: #247342;
+        border: 1px solid #ccebd6;
+    }
+
+    .flash-error {
+        background: #fff1f0;
+        color: #b8322b;
+        border: 1px solid #f2cfcc;
+    }
+
+    @media (max-width: 700px) {
+
+        .form-card {
+            padding: 20px;
+        }
+
+        .form-grid,
+        .radio-group,
+        .group-checkboxes {
+            grid-template-columns: 1fr;
+        }
+
+        .form-actions {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .left-actions,
+        .right-actions {
+            width: 100%;
+        }
+
+        .btn {
+            flex: 1;
+        }
+    }
+</style>
+
+
+<div class="edit-page">
+
+    <div class="page-header">
+
+        <a
+            href="{{ url_for('dashboard.reminder_details', reminder_id=reminder.id) }}"
+            class="back-link"
+        >
+            ← Back to Reminder Details
+        </a>
+
+        <h1 class="page-title">
+            Edit Reminder
+        </h1>
+
+        <p class="page-subtitle">
+            Update the message, audience, schedule, or recurrence settings.
+        </p>
+
+    </div>
+
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+
+        {% if messages %}
+
+            <div class="flash-messages">
+
+                {% for category, message in messages %}
+
+                    <div
+                        class="flash-message
+                        {% if category == 'success' %}
+                            flash-success
+                        {% else %}
+                            flash-error
+                        {% endif %}"
+                    >
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+
+    {% endwith %}
+
+
+    <form
+        method="POST"
+        action="{{ url_for('dashboard.edit_reminder', reminder_id=reminder.id) }}"
+    >
+
+        <div class="form-card">
+
+            <!-- Basic Information -->
+
+            <div class="form-section">
+
+                <h2 class="section-title">
+                    Basic Information
+                </h2>
+
+                <p class="section-description">
+                    Update the reminder name and the church program it belongs to.
+                </p>
+
+
+                <div class="form-group">
+
+                    <label
+                        for="title"
+                        class="form-label"
+                    >
+                        Reminder Title <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        id="title"
+                        name="title"
+                        class="form-control"
+                        value="{{ reminder.title }}"
+                        maxlength="150"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label
+                        for="program_id"
+                        class="form-label"
+                    >
+                        Related Program
+                    </label>
+
+                    <select
+                        id="program_id"
+                        name="program_id"
+                        class="form-control"
+                    >
+
+                        <option value="">
+                            No program
+                        </option>
+
+                        {% for program in programs %}
+
+                            <option
+                                value="{{ program.id }}"
+                                {% if reminder.program_id == program.id %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ program.name }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- Audience -->
+
+            <div class="form-section">
+
+                <h2 class="section-title">
+                    Audience
+                </h2>
+
+                <p class="section-description">
+                    Choose who should receive this reminder.
+                </p>
+
+
+                <div class="radio-group">
+
+                    <div class="radio-card">
+
+                        <input
+                            type="radio"
+                            id="audience_all"
+                            name="audience_type"
+                            value="all"
+                            {% if reminder.audience_type == "all" %}
+                                checked
+                            {% endif %}
+                        >
+
+                        <label for="audience_all">
+
+                            <span class="radio-title">
+                                All Members
+                            </span>
+
+                            <span class="radio-description">
+                                Send the message to all eligible church members.
+                            </span>
+
+                        </label>
+
+                    </div>
+
+
+                    <div class="radio-card">
+
+                        <input
+                            type="radio"
+                            id="audience_groups"
+                            name="audience_type"
+                            value="groups"
+                            {% if reminder.audience_type == "groups" %}
+                                checked
+                            {% endif %}
+                        >
+
+                        <label for="audience_groups">
+
+                            <span class="radio-title">
+                                Selected Groups
+                            </span>
+
+                            <span class="radio-description">
+                                Send the message only to selected groups.
+                            </span>
+
+                        </label>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="groups-panel"
+                    class="groups-panel
+                    {% if reminder.audience_type == 'groups' %}
+                        show
+                    {% endif %}"
+                >
+
+                    <div class="form-label">
+                        Select Groups
+                    </div>
+
+
+                    <div class="group-checkboxes">
+
+                        {% for group in groups %}
+
+                            <div class="group-checkbox">
+
+                                <input
+                                    type="checkbox"
+                                    id="group_{{ group.id }}"
+                                    name="group_ids"
+                                    value="{{ group.id }}"
+                                    {% if group in reminder.groups %}
+                                        checked
+                                    {% endif %}
+                                >
+
+                                <label for="group_{{ group.id }}">
+                                    {{ group.name }}
+                                </label>
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+
+                    <div class="checkbox-help">
+                        Select at least one group when using Selected Groups.
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Message -->
+
+            <div class="form-section">
+
+                <h2 class="section-title">
+                    Message
+                </h2>
+
+                <p class="section-description">
+                    Update the SMS message that will be sent to members.
+                </p>
+
+
+                <div class="form-group">
+
+                    <label
+                        for="message"
+                        class="form-label"
+                    >
+                        SMS Message <span class="required">*</span>
+                    </label>
+
+                    <textarea
+                        id="message"
+                        name="message"
+                        class="form-control"
+                        maxlength="1000"
+                        required
+                    >{{ reminder.message }}</textarea>
+
+                    <div class="form-help">
+                        Keep the message clear and concise for SMS delivery.
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Schedule -->
+
+            <div class="form-section">
+
+                <h2 class="section-title">
+                    Schedule
+                </h2>
+
+                <p class="section-description">
+                    Change when this reminder should run.
+                </p>
+
+
+                <div class="form-group">
+
+                    <label
+                        for="scheduled_at"
+                        class="form-label"
+                    >
+                        Scheduled Date & Time <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="datetime-local"
+                        id="scheduled_at"
+                        name="scheduled_at"
+                        class="form-control"
+                        value="{{ reminder.scheduled_at.strftime('%Y-%m-%dT%H:%M') }}"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label
+                        for="recurrence_type"
+                        class="form-label"
+                    >
+                        Recurrence
+                    </label>
+
+                    <select
+                        id="recurrence_type"
+                        name="recurrence_type"
+                        class="form-control"
+                    >
+
+                        <option
+                            value="one_time"
+                            {% if reminder.recurrence_type == "one_time" %}
+                                selected
+                            {% endif %}
+                        >
+                            One time
+                        </option>
+
+                        <option
+                            value="daily"
+                            {% if reminder.recurrence_type == "daily" %}
+                                selected
+                            {% endif %}
+                        >
+                            Daily
+                        </option>
+
+                        <option
+                            value="weekly"
+                            {% if reminder.recurrence_type == "weekly" %}
+                                selected
+                            {% endif %}
+                        >
+                            Weekly
+                        </option>
+
+                        <option
+                            value="monthly"
+                            {% if reminder.recurrence_type == "monthly" %}
+                                selected
+                            {% endif %}
+                        >
+                            Monthly
+                        </option>
+
+                        <option
+                            value="yearly"
+                            {% if reminder.recurrence_type == "yearly" %}
+                                selected
+                            {% endif %}
+                        >
+                            Yearly
+                        </option>
+
+                        <option
+                            value="interval_days"
+                            {% if reminder.recurrence_type == "interval_days" %}
+                                selected
+                            {% endif %}
+                        >
+                            Every X days
+                        </option>
+
+                        <option
+                            value="interval_weeks"
+                            {% if reminder.recurrence_type == "interval_weeks" %}
+                                selected
+                            {% endif %}
+                        >
+                            Every X weeks
+                        </option>
+
+                        <option
+                            value="interval_months"
+                            {% if reminder.recurrence_type == "interval_months" %}
+                                selected
+                            {% endif %}
+                        >
+                            Every X months
+                        </option>
+
+                        <option
+                            value="interval_years"
+                            {% if reminder.recurrence_type == "interval_years" %}
+                                selected
+                            {% endif %}
+                        >
+                            Every X years
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div
+                    id="recurrence-panel"
+                    class="recurrence-panel
+                    {% if reminder.recurrence_type != 'one_time' %}
+                        show
+                    {% endif %}"
+                >
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label
+                                for="recurrence_interval"
+                                class="form-label"
+                            >
+                                Repeat Every
+                            </label>
+
+                            <input
+                                type="number"
+                                id="recurrence_interval"
+                                name="recurrence_interval"
+                                class="form-control"
+                                min="1"
+                                value="{{ reminder.recurrence_interval or 1 }}"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label
+                                for="recurrence_end_date"
+                                class="form-label"
+                            >
+                                End Date
+                            </label>
+
+                            <input
+                                type="date"
+                                id="recurrence_end_date"
+                                name="recurrence_end_date"
+                                class="form-control"
+                                value="{% if reminder.recurrence_end_date %}{{ reminder.recurrence_end_date.strftime('%Y-%m-%d') }}{% endif %}"
+                            >
+
+                            <div class="form-help">
+                                Leave blank if the reminder should continue indefinitely.
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Channel -->
+
+            <div class="form-section">
+
+                <h2 class="section-title">
+                    Communication Channel
+                </h2>
+
+                <p class="section-description">
+                    ChurchConnect currently sends reminders through SMS.
+                </p>
+
+
+                <div class="form-group">
+
+                    <label
+                        for="channel"
+                        class="form-label"
+                    >
+                        Channel
+                    </label>
+
+                    <select
+                        id="channel"
+                        name="channel"
+                        class="form-control"
+                    >
+
+                        <option
+                            value="sms"
+                            {% if reminder.channel == "sms" %}
+                                selected
+                            {% endif %}
+                        >
+                            SMS
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- Actions -->
+
+            <div class="form-actions">
+
+                <div class="left-actions">
+
+                    <a
+                        href="{{ url_for('dashboard.reminder_details', reminder_id=reminder.id) }}"
+                        class="btn btn-secondary"
+                    >
+                        Cancel
+                    </a>
+
+                </div>
+
+
+                <div class="right-actions">
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        Save Changes
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const audienceAll = document.getElementById("audience_all");
+        const audienceGroups = document.getElementById("audience_groups");
+        const groupsPanel = document.getElementById("groups-panel");
+
+        const recurrenceType = document.getElementById("recurrence_type");
+        const recurrencePanel = document.getElementById("recurrence-panel");
+
+        function updateAudience() {
+
+            if (audienceGroups.checked) {
+                groupsPanel.classList.add("show");
+            } else {
+                groupsPanel.classList.remove("show");
+            }
+        }
+
+
+        function updateRecurrence() {
+
+            if (recurrenceType.value === "one_time") {
+                recurrencePanel.classList.remove("show");
+            } else {
+                recurrencePanel.classList.add("show");
+            }
+        }
+
+
+        audienceAll.addEventListener(
+            "change",
+            updateAudience
+        );
+
+        audienceGroups.addEventListener(
+            "change",
+            updateAudience
+        );
+
+        recurrenceType.addEventListener(
+            "change",
+            updateRecurrence
+        );
+
+
+        updateAudience();
+        updateRecurrence();
+
+    });
+</script>
+
+{% endblock %}

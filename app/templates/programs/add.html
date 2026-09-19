@@ -1,0 +1,555 @@
+{% extends "base.html" %}
+
+{% block title %}Add Program{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+
+        <div class="breadcrumb">
+            <a href="{{ url_for('dashboard.programs') }}">
+                Programs
+            </a>
+            <span>›</span>
+            <span>Add Program</span>
+        </div>
+
+        <h1>Add Program</h1>
+
+        <p>
+            Create a church program or service that can later be connected
+            to automated reminders.
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     FLASH MESSAGES
+===================================================== -->
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+
+    {% if messages %}
+
+        <div class="flash-container">
+
+            {% for category, message in messages %}
+
+                <div
+                    class="flash
+                    {% if category == 'success' %}
+                        flash-success
+                    {% else %}
+                        flash-error
+                    {% endif %}"
+                >
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% endif %}
+
+{% endwith %}
+
+
+<!-- =====================================================
+     FORM CARD
+===================================================== -->
+
+<div class="form-card">
+
+    <div class="card-header">
+
+        <div>
+
+            <h2>Program Information</h2>
+
+            <p>
+                Enter the details of the service or activity.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <form
+        method="POST"
+        action="{{ url_for('dashboard.add_program') }}"
+    >
+
+        <div class="form-grid">
+
+
+            <!-- PROGRAM NAME -->
+
+            <div class="form-group full-width">
+
+                <label for="name">
+                    Program Name
+                    <span class="required">*</span>
+                </label>
+
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    placeholder="e.g. Tuesday Dawn Service"
+                    required
+                    value="{{ request.form.get('name', '') }}"
+                >
+
+                <span class="help-text">
+                    Give the program a clear name members will recognize.
+                </span>
+
+            </div>
+
+
+            <!-- DAY -->
+
+            <div class="form-group">
+
+                <label for="day_of_week">
+                    Day of the Week
+                </label>
+
+                <select
+                    id="day_of_week"
+                    name="day_of_week"
+                >
+
+                    <option value="">
+                        Select a day
+                    </option>
+
+                    {% for day in [
+                        "Monday",
+                        "Tuesday",
+                        "Wednesday",
+                        "Thursday",
+                        "Friday",
+                        "Saturday",
+                        "Sunday"
+                    ] %}
+
+                        <option
+                            value="{{ day }}"
+                            {% if request.form.get('day_of_week') == day %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ day }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <!-- START TIME -->
+
+            <div class="form-group">
+
+                <label for="start_time">
+                    Start Time
+                </label>
+
+                <input
+                    type="time"
+                    id="start_time"
+                    name="start_time"
+                    value="{{ request.form.get('start_time', '') }}"
+                >
+
+                <span class="help-text">
+                    This helps the reminder system determine timing later.
+                </span>
+
+            </div>
+
+
+            <!-- LOCATION -->
+
+            <div class="form-group full-width">
+
+                <label for="location">
+                    Location
+                </label>
+
+                <input
+                    type="text"
+                    id="location"
+                    name="location"
+                    placeholder="e.g. Main Auditorium"
+                    value="{{ request.form.get('location', '') }}"
+                >
+
+            </div>
+
+
+            <!-- DESCRIPTION -->
+
+            <div class="form-group full-width">
+
+                <label for="description">
+                    Description
+                </label>
+
+                <textarea
+                    id="description"
+                    name="description"
+                    placeholder="Briefly describe this program..."
+                >{{ request.form.get('description', '') }}</textarea>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             INFORMATION
+        ================================================== -->
+
+        <div class="info-box">
+
+            <div class="info-icon">
+                💡
+            </div>
+
+            <div>
+
+                <strong>
+                    About program scheduling
+                </strong>
+
+                <p>
+                    ChurchConnect can use the program's day and start time
+                    to help schedule reminders. For example, a Tuesday Dawn
+                    Service can later be configured to automatically send
+                    an SMS reminder on Monday evening.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             ACTIONS
+        ================================================== -->
+
+        <div class="form-actions">
+
+            <a
+                href="{{ url_for('dashboard.programs') }}"
+                class="secondary-button"
+            >
+                Cancel
+            </a>
+
+            <button
+                type="submit"
+                class="primary-button"
+            >
+                Create Program
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<style>
+
+/* =====================================================
+   PAGE HEADER
+===================================================== */
+
+.page-header {
+    margin-bottom: 25px;
+}
+
+.page-header h1 {
+    margin: 8px 0 6px;
+    font-size: 30px;
+}
+
+.page-header p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+
+/* =====================================================
+   BREADCRUMB
+===================================================== */
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #8a958f;
+}
+
+.breadcrumb a {
+    color: #12372a;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+
+/* =====================================================
+   FLASH MESSAGES
+===================================================== */
+
+.flash-container {
+    margin-bottom: 20px;
+}
+
+.flash {
+    padding: 13px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+.flash-error {
+    background: #fff0f0;
+    border: 1px solid #f2cccc;
+    color: #a33a3a;
+}
+
+.flash-success {
+    background: #edf8f1;
+    border: 1px solid #cfe8d8;
+    color: #237044;
+}
+
+
+/* =====================================================
+   FORM CARD
+===================================================== */
+
+.form-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 25px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
+}
+
+.card-header {
+    margin-bottom: 25px;
+}
+
+.card-header h2 {
+    margin: 0;
+    font-size: 19px;
+}
+
+.card-header p {
+    margin: 5px 0 0;
+    color: #6b7280;
+    font-size: 13px;
+}
+
+
+/* =====================================================
+   FORM
+===================================================== */
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 21px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #35463e;
+}
+
+.required {
+    color: #b43b3b;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    border: 1px solid #dbe4df;
+    border-radius: 9px;
+    padding: 11px 12px;
+    font-family: inherit;
+    font-size: 14px;
+    color: #17221d;
+    background: #ffffff;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input,
+.form-group select {
+    min-height: 44px;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: #12372a;
+    box-shadow: 0 0 0 3px rgba(18, 55, 42, 0.08);
+}
+
+.form-group textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.help-text {
+    color: #8a958f;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+
+/* =====================================================
+   INFORMATION BOX
+===================================================== */
+
+.info-box {
+    display: flex;
+    gap: 12px;
+    margin-top: 25px;
+    padding: 16px;
+    border-radius: 11px;
+    background: #edf6f1;
+    border: 1px solid #d8e9df;
+    color: #456056;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.info-icon {
+    font-size: 19px;
+    flex-shrink: 0;
+}
+
+.info-box strong {
+    color: #12372a;
+}
+
+.info-box p {
+    margin: 4px 0 0;
+}
+
+
+/* =====================================================
+   ACTIONS
+===================================================== */
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 28px;
+    padding-top: 22px;
+    border-top: 1px solid #edf1ef;
+}
+
+.primary-button,
+.secondary-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 17px;
+    border-radius: 9px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.primary-button {
+    border: 1px solid #12372a;
+    background: #12372a;
+    color: #ffffff;
+}
+
+.primary-button:hover {
+    background: #0d2b20;
+}
+
+.secondary-button {
+    border: 1px solid #dfe7e2;
+    background: #ffffff;
+    color: #304139;
+}
+
+.secondary-button:hover {
+    background: #f8faf9;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 700px) {
+
+    .form-card {
+        padding: 20px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .full-width {
+        grid-column: auto;
+    }
+
+    .form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .form-actions .primary-button,
+    .form-actions .secondary-button {
+        width: 100%;
+    }
+
+}
+
+</style>
+
+{% endblock %}

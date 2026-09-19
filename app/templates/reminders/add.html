@@ -1,0 +1,1345 @@
+{% extends "base.html" %}
+
+{% block title %}Create Reminder | ChurchConnect{% endblock %}
+
+{% block content %}
+
+<style>
+    .reminder-page {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding-bottom: 40px;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 28px;
+    }
+
+    .page-header-left {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .back-link {
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background: #f1f5f3;
+        color: #12372a;
+        text-decoration: none;
+        font-size: 20px;
+        font-weight: 700;
+        transition: 0.2s ease;
+    }
+
+    .back-link:hover {
+        background: #e2ebe7;
+        transform: translateX(-2px);
+    }
+
+    .page-title {
+        margin: 0;
+        font-size: 30px;
+        font-weight: 800;
+        color: #12372a;
+    }
+
+    .page-subtitle {
+        margin: 6px 0 0;
+        color: #718078;
+        font-size: 15px;
+    }
+
+    .form-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 330px;
+        gap: 24px;
+        align-items: start;
+    }
+
+    .card {
+        background: #ffffff;
+        border: 1px solid #e5ebe8;
+        border-radius: 18px;
+        box-shadow: 0 8px 30px rgba(18, 55, 42, 0.06);
+        overflow: hidden;
+    }
+
+    .card-header {
+        padding: 22px 24px;
+        border-bottom: 1px solid #edf1ef;
+    }
+
+    .card-title {
+        margin: 0;
+        color: #12372a;
+        font-size: 18px;
+        font-weight: 750;
+    }
+
+    .card-description {
+        margin: 6px 0 0;
+        color: #7a8781;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    .card-body {
+        padding: 24px;
+    }
+
+    .form-group {
+        margin-bottom: 22px;
+    }
+
+    .form-group:last-child {
+        margin-bottom: 0;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 8px;
+        color: #24362e;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .required {
+        color: #c0392b;
+    }
+
+    .form-control,
+    .form-select {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 12px 14px;
+        border: 1px solid #dce5e1;
+        border-radius: 11px;
+        background: #ffffff;
+        color: #24362e;
+        font-family: inherit;
+        font-size: 14px;
+        outline: none;
+        transition: 0.2s ease;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #12372a;
+        box-shadow: 0 0 0 3px rgba(18, 55, 42, 0.08);
+    }
+
+    textarea.form-control {
+        min-height: 150px;
+        resize: vertical;
+        line-height: 1.55;
+    }
+
+    .help-text {
+        margin-top: 7px;
+        color: #85918c;
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+    .audience-options {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .audience-option {
+        position: relative;
+    }
+
+    .audience-option input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .audience-label {
+        display: block;
+        padding: 15px;
+        border: 1px solid #dce5e1;
+        border-radius: 13px;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    .audience-label:hover {
+        border-color: #9eb5aa;
+        background: #fafcfb;
+    }
+
+    .audience-option input:checked + .audience-label {
+        border-color: #12372a;
+        background: #f1f7f4;
+        box-shadow: 0 0 0 2px rgba(18, 55, 42, 0.06);
+    }
+
+    .audience-title {
+        display: block;
+        color: #12372a;
+        font-size: 14px;
+        font-weight: 750;
+        margin-bottom: 4px;
+    }
+
+    .audience-description {
+        display: block;
+        color: #7b8782;
+        font-size: 12px;
+        line-height: 1.4;
+    }
+
+    .groups-panel {
+        margin-top: 14px;
+        padding: 16px;
+        border: 1px solid #e1e8e4;
+        border-radius: 13px;
+        background: #fafcfb;
+    }
+
+    .groups-panel.hidden {
+        display: none;
+    }
+
+    .groups-title {
+        margin: 0 0 12px;
+        color: #263a31;
+        font-size: 13px;
+        font-weight: 750;
+    }
+
+    .group-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 9px;
+    }
+
+    .group-item {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 10px;
+        border: 1px solid #e2e9e5;
+        border-radius: 10px;
+        background: #ffffff;
+        cursor: pointer;
+    }
+
+    .group-item:hover {
+        border-color: #b7c9c0;
+    }
+
+    .group-item input {
+        width: 16px;
+        height: 16px;
+        accent-color: #12372a;
+    }
+
+    .group-name {
+        color: #34453d;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .no-groups {
+        margin: 0;
+        color: #7c8983;
+        font-size: 13px;
+    }
+
+    .channel-card {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        padding: 15px;
+        border: 1px solid #dce5e1;
+        border-radius: 13px;
+        background: #f8fbf9;
+    }
+
+    .channel-icon {
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 11px;
+        background: #12372a;
+        color: #ffffff;
+        font-size: 17px;
+        font-weight: 800;
+    }
+
+    .channel-name {
+        margin: 0;
+        color: #24362e;
+        font-size: 14px;
+        font-weight: 750;
+    }
+
+    .channel-status {
+        margin: 3px 0 0;
+        color: #7b8782;
+        font-size: 12px;
+    }
+
+    .info-box {
+        padding: 17px;
+        border-radius: 14px;
+        background: #f1f7f4;
+        border: 1px solid #dceae3;
+    }
+
+    .info-box-title {
+        margin: 0 0 7px;
+        color: #12372a;
+        font-size: 14px;
+        font-weight: 750;
+    }
+
+    .info-box-text {
+        margin: 0;
+        color: #64736c;
+        font-size: 12px;
+        line-height: 1.55;
+    }
+
+    .side-section {
+        margin-bottom: 18px;
+    }
+
+    .side-section:last-child {
+        margin-bottom: 0;
+    }
+
+    .side-label {
+        display: block;
+        margin-bottom: 8px;
+        color: #7b8782;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+    }
+
+    /* ----------------------------------------------------
+       Recurrence
+    ---------------------------------------------------- */
+
+    .recurrence-panel {
+        margin-top: 12px;
+        padding: 16px;
+        border: 1px solid #e1e8e4;
+        border-radius: 13px;
+        background: #fafcfb;
+    }
+
+    .recurrence-panel.hidden {
+        display: none;
+    }
+
+    .recurrence-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 14px;
+    }
+
+    .recurrence-field {
+        display: none;
+    }
+
+    .recurrence-field.visible {
+        display: block;
+    }
+
+    .recurrence-label {
+        display: block;
+        margin-bottom: 7px;
+        color: #526159;
+        font-size: 12px;
+        font-weight: 750;
+    }
+
+    .interval-row {
+        display: grid;
+        grid-template-columns: 100px 1fr;
+        gap: 10px;
+        margin-top: 14px;
+    }
+
+    .recurrence-summary {
+        margin-top: 13px;
+        padding: 11px 13px;
+        border-radius: 10px;
+        background: #eef6f2;
+        color: #496158;
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+    .recurrence-summary strong {
+        color: #12372a;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 24px;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 43px;
+        padding: 0 17px;
+        border-radius: 11px;
+        border: 1px solid transparent;
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 750;
+        text-decoration: none;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    .btn-secondary {
+        background: #ffffff;
+        color: #53635b;
+        border-color: #dce5e1;
+    }
+
+    .btn-secondary:hover {
+        background: #f6f8f7;
+    }
+
+    .btn-primary {
+        background: #12372a;
+        color: #ffffff;
+        border-color: #12372a;
+    }
+
+    .btn-primary:hover {
+        background: #0d2c21;
+        transform: translateY(-1px);
+    }
+
+    .flash-messages {
+        margin-bottom: 20px;
+    }
+
+    .flash-message {
+        padding: 13px 16px;
+        border-radius: 11px;
+        margin-bottom: 10px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .flash-success {
+        background: #edf8f1;
+        color: #247342;
+        border: 1px solid #ccebd6;
+    }
+
+    .flash-error {
+        background: #fff1f0;
+        color: #b8322b;
+        border: 1px solid #f2cfcc;
+    }
+
+    @media (max-width: 850px) {
+        .form-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .page-header {
+            align-items: flex-start;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .reminder-page {
+            padding-bottom: 25px;
+        }
+
+        .page-title {
+            font-size: 24px;
+        }
+
+        .audience-options,
+        .group-list,
+        .recurrence-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .card-header,
+        .card-body {
+            padding: 19px;
+        }
+
+        .form-actions {
+            flex-direction: column-reverse;
+        }
+
+        .form-actions .btn {
+            width: 100%;
+        }
+
+        .interval-row {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+
+<div class="reminder-page">
+
+    <div class="page-header">
+
+        <div class="page-header-left">
+
+            <a
+                href="{{ url_for('dashboard.reminders') }}"
+                class="back-link"
+                title="Back to reminders"
+            >
+                ←
+            </a>
+
+            <div>
+                <h1 class="page-title">
+                    Create Reminder
+                </h1>
+
+                <p class="page-subtitle">
+                    Prepare a message to be sent to your church members.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+
+        {% if messages %}
+
+            <div class="flash-messages">
+
+                {% for category, message in messages %}
+
+                    <div
+                        class="flash-message
+                        {% if category == 'success' %}
+                            flash-success
+                        {% else %}
+                            flash-error
+                        {% endif %}"
+                    >
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+
+    {% endwith %}
+
+
+    <form
+        method="POST"
+        action="{{ url_for('dashboard.add_reminder') }}"
+    >
+
+        <div class="form-layout">
+
+            <!-- ==================================================
+                 LEFT SIDE
+            =================================================== -->
+
+            <div>
+
+                <div class="card">
+
+                    <div class="card-header">
+
+                        <h2 class="card-title">
+                            Reminder Details
+                        </h2>
+
+                        <p class="card-description">
+                            Enter the basic information for this reminder.
+                        </p>
+
+                    </div>
+
+
+                    <div class="card-body">
+
+                        <!-- TITLE -->
+
+                        <div class="form-group">
+
+                            <label
+                                for="title"
+                                class="form-label"
+                            >
+                                Reminder Title
+                                <span class="required">*</span>
+                            </label>
+
+                            <input
+                                type="text"
+                                id="title"
+                                name="title"
+                                class="form-control"
+                                placeholder="e.g. Tuesday Dawn Service Reminder"
+                                maxlength="150"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- PROGRAM -->
+
+                        <div class="form-group">
+
+                            <label
+                                for="program_id"
+                                class="form-label"
+                            >
+                                Related Program
+                            </label>
+
+                            <select
+                                id="program_id"
+                                name="program_id"
+                                class="form-select"
+                            >
+
+                                <option value="">
+                                    No specific program
+                                </option>
+
+                                {% for program in programs %}
+
+                                    <option
+                                        value="{{ program.id }}"
+                                    >
+                                        {{ program.name }}
+
+                                        {% if program.day_of_week %}
+                                            — {{ program.day_of_week }}
+                                        {% endif %}
+
+                                    </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                            <div class="help-text">
+                                Connecting the reminder to a program helps
+                                ChurchConnect understand what the message is about.
+                            </div>
+
+                        </div>
+
+
+                        <!-- AUDIENCE -->
+
+                        <div class="form-group">
+
+                            <label class="form-label">
+                                Audience
+                                <span class="required">*</span>
+                            </label>
+
+
+                            <div class="audience-options">
+
+                                <div class="audience-option">
+
+                                    <input
+                                        type="radio"
+                                        id="audience_all"
+                                        name="audience_type"
+                                        value="all"
+                                        checked
+                                    >
+
+                                    <label
+                                        for="audience_all"
+                                        class="audience-label"
+                                    >
+
+                                        <span class="audience-title">
+                                            All Members
+                                        </span>
+
+                                        <span class="audience-description">
+                                            Send to all active members who have
+                                            opted in for SMS.
+                                        </span>
+
+                                    </label>
+
+                                </div>
+
+
+                                <div class="audience-option">
+
+                                    <input
+                                        type="radio"
+                                        id="audience_groups"
+                                        name="audience_type"
+                                        value="groups"
+                                    >
+
+                                    <label
+                                        for="audience_groups"
+                                        class="audience-label"
+                                    >
+
+                                        <span class="audience-title">
+                                            Selected Groups
+                                        </span>
+
+                                        <span class="audience-description">
+                                            Choose one or more groups to receive
+                                            the reminder.
+                                        </span>
+
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- GROUPS -->
+
+                            <div
+                                id="groups-panel"
+                                class="groups-panel hidden"
+                            >
+
+                                <p class="groups-title">
+                                    Select Groups
+                                </p>
+
+                                {% if groups %}
+
+                                    <div class="group-list">
+
+                                        {% for group in groups %}
+
+                                            <label class="group-item">
+
+                                                <input
+                                                    type="checkbox"
+                                                    name="group_ids"
+                                                    value="{{ group.id }}"
+                                                >
+
+                                                <span class="group-name">
+                                                    {{ group.name }}
+                                                </span>
+
+                                            </label>
+
+                                        {% endfor %}
+
+                                    </div>
+
+                                {% else %}
+
+                                    <p class="no-groups">
+                                        No active groups have been created yet.
+                                    </p>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- MESSAGE -->
+
+                        <div class="form-group">
+
+                            <label
+                                for="message"
+                                class="form-label"
+                            >
+                                SMS Message
+                                <span class="required">*</span>
+                            </label>
+
+                            <textarea
+                                id="message"
+                                name="message"
+                                class="form-control"
+                                maxlength="1000"
+                                placeholder="Example: Dear member, this is a reminder that our Tuesday Dawn Service begins at 5:00 AM. We look forward to worshipping with you."
+                                required
+                            ></textarea>
+
+                            <div class="help-text">
+                                Keep your message clear and concise.
+                                SMS sending and character-count rules will be
+                                added when we connect the SMS provider.
+                            </div>
+
+                        </div>
+
+
+                        <!-- ACTIONS -->
+
+                        <div class="form-actions">
+
+                            <a
+                                href="{{ url_for('dashboard.reminders') }}"
+                                class="btn btn-secondary"
+                            >
+                                Cancel
+                            </a>
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary"
+                            >
+                                Schedule Reminder
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ==================================================
+                 RIGHT SIDE
+            =================================================== -->
+
+            <div>
+
+                <div class="card">
+
+                    <div class="card-header">
+
+                        <h2 class="card-title">
+                            Delivery
+                        </h2>
+
+                        <p class="card-description">
+                            Choose when and how often the reminder should run.
+                        </p>
+
+                    </div>
+
+
+                    <div class="card-body">
+
+                        <!-- DATE/TIME -->
+
+                        <div class="side-section">
+
+                            <label
+                                for="scheduled_at"
+                                class="side-label"
+                            >
+                                Schedule Date & Time
+                            </label>
+
+                            <input
+                                type="datetime-local"
+                                id="scheduled_at"
+                                name="scheduled_at"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- RECURRENCE -->
+
+                        <div class="side-section">
+
+                            <label
+                                for="recurrence_type"
+                                class="side-label"
+                            >
+                                Repeat
+                            </label>
+
+                            <select
+                                id="recurrence_type"
+                                name="recurrence_type"
+                                class="form-select"
+                            >
+
+                                <option value="one_time">
+                                    Does not repeat
+                                </option>
+
+                                <option value="daily">
+                                    Every day
+                                </option>
+
+                                <option value="weekly">
+                                    Every week
+                                </option>
+
+                                <option value="monthly">
+                                    Every month
+                                </option>
+
+                                <option value="yearly">
+                                    Every year
+                                </option>
+
+                                <option value="interval_days">
+                                    Every X days
+                                </option>
+
+                                <option value="interval_weeks">
+                                    Every X weeks
+                                </option>
+
+                                <option value="interval_months">
+                                    Every X months
+                                </option>
+
+                                <option value="interval_years">
+                                    Every X years
+                                </option>
+
+                            </select>
+
+
+                            <!-- INTERVAL -->
+
+                            <div
+                                id="interval-panel"
+                                class="recurrence-panel hidden"
+                            >
+
+                                <div class="interval-row">
+
+                                    <div>
+
+                                        <label
+                                            for="recurrence_interval"
+                                            class="recurrence-label"
+                                        >
+                                            Number
+                                        </label>
+
+                                        <input
+                                            type="number"
+                                            id="recurrence_interval"
+                                            name="recurrence_interval"
+                                            class="form-control"
+                                            value="1"
+                                            min="1"
+                                            max="365"
+                                        >
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <label
+                                            class="recurrence-label"
+                                        >
+                                            Repeat unit
+                                        </label>
+
+                                        <div
+                                            id="interval-unit-display"
+                                            class="form-control"
+                                            style="background:#f5f8f6;"
+                                        >
+                                            days
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="recurrence-summary">
+
+                                    This reminder will repeat every
+                                    <strong id="interval-summary-number">
+                                        1
+                                    </strong>
+
+                                    <strong id="interval-summary-unit">
+                                        day
+                                    </strong>.
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- END DATE -->
+
+                            <div
+                                id="end-date-panel"
+                                class="recurrence-field"
+                            >
+
+                                <div class="recurrence-grid">
+
+                                    <div>
+
+                                        <label
+                                            for="recurrence_end_date"
+                                            class="recurrence-label"
+                                        >
+                                            End date
+                                        </label>
+
+                                        <input
+                                            type="date"
+                                            id="recurrence_end_date"
+                                            name="recurrence_end_date"
+                                            class="form-control"
+                                        >
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="help-text">
+                                    Leave this empty if the recurring reminder
+                                    should continue indefinitely.
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- CHANNEL -->
+
+                        <div class="side-section">
+
+                            <span class="side-label">
+                                Channel
+                            </span>
+
+                            <div class="channel-card">
+
+                                <div class="channel-icon">
+                                    SMS
+                                </div>
+
+                                <div>
+
+                                    <p class="channel-name">
+                                        SMS
+                                    </p>
+
+                                    <p class="channel-status">
+                                        Ready for provider integration
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- INFO -->
+
+                        <div class="side-section">
+
+                            <div class="info-box">
+
+                                <p class="info-box-title">
+                                    How this works
+                                </p>
+
+                                <p class="info-box-text">
+                                    This reminder will first be saved as
+                                    <strong>Scheduled</strong>. Recurring
+                                    reminders will have their next run
+                                    calculated automatically.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        /* =====================================================
+           AUDIENCE
+        ===================================================== */
+
+        const allAudience =
+            document.getElementById("audience_all");
+
+        const groupsAudience =
+            document.getElementById("audience_groups");
+
+        const groupsPanel =
+            document.getElementById("groups-panel");
+
+
+        function updateAudiencePanel() {
+
+            if (groupsAudience.checked) {
+
+                groupsPanel.classList.remove("hidden");
+
+            } else {
+
+                groupsPanel.classList.add("hidden");
+
+                document
+                    .querySelectorAll(
+                        'input[name="group_ids"]'
+                    )
+                    .forEach(
+                        function (checkbox) {
+
+                            checkbox.checked = false;
+
+                        }
+                    );
+            }
+        }
+
+
+        allAudience.addEventListener(
+            "change",
+            updateAudiencePanel
+        );
+
+        groupsAudience.addEventListener(
+            "change",
+            updateAudiencePanel
+        );
+
+        updateAudiencePanel();
+
+
+        /* =====================================================
+           RECURRENCE
+        ===================================================== */
+
+        const recurrenceType =
+            document.getElementById("recurrence_type");
+
+        const intervalPanel =
+            document.getElementById("interval-panel");
+
+        const endDatePanel =
+            document.getElementById("end-date-panel");
+
+        const intervalInput =
+            document.getElementById("recurrence_interval");
+
+        const intervalUnitDisplay =
+            document.getElementById("interval-unit-display");
+
+        const intervalSummaryNumber =
+            document.getElementById("interval-summary-number");
+
+        const intervalSummaryUnit =
+            document.getElementById("interval-summary-unit");
+
+
+        function updateRecurrence() {
+
+            const type =
+                recurrenceType.value;
+
+
+            /* ---------------------------------------------
+               Reset
+            --------------------------------------------- */
+
+            intervalPanel.classList.add("hidden");
+
+            endDatePanel.classList.remove("visible");
+
+
+            /* ---------------------------------------------
+               One-time
+            --------------------------------------------- */
+
+            if (type === "one_time") {
+
+                intervalInput.value = 1;
+
+                return;
+            }
+
+
+            /* ---------------------------------------------
+               Recurring reminder
+            --------------------------------------------- */
+
+            endDatePanel.classList.add("visible");
+
+
+            /* ---------------------------------------------
+               Custom interval
+            --------------------------------------------- */
+
+            const intervalTypes = {
+
+                "interval_days": "day",
+                "interval_weeks": "week",
+                "interval_months": "month",
+                "interval_years": "year"
+
+            };
+
+
+            if (
+                Object.prototype.hasOwnProperty.call(
+                    intervalTypes,
+                    type
+                )
+            ) {
+
+                intervalPanel.classList.remove("hidden");
+
+
+                const unit =
+                    intervalTypes[type];
+
+
+                intervalUnitDisplay.textContent =
+                    unit + (
+                        parseInt(intervalInput.value || 1) === 1
+                            ? ""
+                            : "s"
+                    );
+
+
+                updateIntervalSummary();
+
+            }
+
+        }
+
+
+        function updateIntervalSummary() {
+
+            const type =
+                recurrenceType.value;
+
+            const number =
+                parseInt(
+                    intervalInput.value || 1
+                );
+
+
+            const units = {
+
+                "interval_days": "day",
+                "interval_weeks": "week",
+                "interval_months": "month",
+                "interval_years": "year"
+
+            };
+
+
+            const unit =
+                units[type] || "day";
+
+
+            intervalSummaryNumber.textContent =
+                number;
+
+
+            intervalSummaryUnit.textContent =
+                unit + (
+                    number === 1
+                        ? ""
+                        : "s"
+                );
+
+
+            intervalUnitDisplay.textContent =
+                unit + (
+                    number === 1
+                        ? ""
+                        : "s"
+                );
+        }
+
+
+        recurrenceType.addEventListener(
+            "change",
+            updateRecurrence
+        );
+
+
+        intervalInput.addEventListener(
+            "input",
+            updateIntervalSummary
+        );
+
+
+        updateRecurrence();
+
+    }
+);
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,632 @@
+{% extends "base.html" %}
+
+{% block title %}Reminders | ChurchConnect{% endblock %}
+
+{% block content %}
+
+<style>
+    .reminders-page {
+        max-width: 1150px;
+        margin: 0 auto;
+        padding-bottom: 40px;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 28px;
+    }
+
+    .page-title {
+        margin: 0;
+        color: #12372a;
+        font-size: 30px;
+        font-weight: 800;
+    }
+
+    .page-subtitle {
+        margin: 6px 0 0;
+        color: #718078;
+        font-size: 15px;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 40px;
+        padding: 0 15px;
+        border-radius: 10px;
+        border: 1px solid transparent;
+        font-family: inherit;
+        font-size: 12px;
+        font-weight: 750;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.18s ease;
+    }
+
+    .btn-primary {
+        background: #12372a;
+        color: #ffffff;
+        border-color: #12372a;
+    }
+
+    .btn-primary:hover {
+        background: #0d2c21;
+        border-color: #0d2c21;
+    }
+
+    .flash-messages {
+        margin-bottom: 20px;
+    }
+
+    .flash-message {
+        padding: 13px 16px;
+        border-radius: 11px;
+        margin-bottom: 10px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .flash-success {
+        background: #edf8f1;
+        color: #247342;
+        border: 1px solid #ccebd6;
+    }
+
+    .flash-error {
+        background: #fff1f0;
+        color: #b8322b;
+        border: 1px solid #f2cfcc;
+    }
+
+    .reminder-list {
+        display: grid;
+        gap: 14px;
+    }
+
+    .reminder-card {
+        background: #ffffff;
+        border: 1px solid #e5ebe8;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 6px 24px rgba(18, 55, 42, 0.04);
+    }
+
+    .reminder-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+    .reminder-title {
+        margin: 0;
+        color: #12372a;
+        font-size: 17px;
+        font-weight: 750;
+    }
+
+    .reminder-message {
+        margin: 8px 0 0;
+        color: #68766f;
+        font-size: 13px;
+        line-height: 1.55;
+    }
+
+    .status {
+        flex-shrink: 0;
+        height: fit-content;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .status-scheduled {
+        background: #edf8f1;
+        color: #247342;
+    }
+
+    .status-paused {
+        background: #fff6e8;
+        color: #a86b00;
+    }
+
+    .status-completed {
+        background: #eef4ff;
+        color: #315d9b;
+    }
+
+    .status-failed {
+        background: #fff1f0;
+        color: #b8322b;
+    }
+
+    .status-default {
+        background: #f2f5f3;
+        color: #637169;
+    }
+
+    .reminder-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 16px;
+    }
+
+    .meta-item {
+        padding: 7px 10px;
+        border-radius: 9px;
+        background: #f5f8f6;
+        color: #637169;
+        font-size: 11px;
+        font-weight: 650;
+    }
+
+    /* Actions */
+
+    .reminder-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin-top: 20px;
+        padding-top: 16px;
+        border-top: 1px solid #edf1ef;
+    }
+
+    .reminder-stats {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        color: #7a8781;
+        font-size: 11px;
+        font-weight: 650;
+    }
+
+    .reminder-stat {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .actions {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+    }
+
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 34px;
+        padding: 0 11px;
+        border-radius: 8px;
+        border: 1px solid #dfe7e3;
+        background: #ffffff;
+        color: #405049;
+        font-family: inherit;
+        font-size: 11px;
+        font-weight: 750;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.18s ease;
+    }
+
+    .action-btn:hover {
+        background: #f5f8f6;
+        border-color: #cbd8d2;
+        color: #12372a;
+    }
+
+    .action-btn.pause:hover {
+        background: #fff8ed;
+        border-color: #ead5ad;
+        color: #9a6500;
+    }
+
+    .action-btn.activate:hover {
+        background: #edf8f1;
+        border-color: #ccebd6;
+        color: #247342;
+    }
+
+    .action-btn.delete {
+        color: #a9443d;
+        border-color: #ead4d1;
+    }
+
+    .action-btn.delete:hover {
+        background: #fff1f0;
+        border-color: #e6c1bd;
+        color: #b8322b;
+    }
+
+    .action-form {
+        margin: 0;
+        padding: 0;
+    }
+
+    .empty-state {
+        background: #ffffff;
+        border: 1px solid #e5ebe8;
+        border-radius: 18px;
+        padding: 60px 25px;
+        text-align: center;
+        box-shadow: 0 8px 30px rgba(18, 55, 42, 0.05);
+    }
+
+    .empty-icon {
+        width: 58px;
+        height: 58px;
+        margin: 0 auto 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 16px;
+        background: #f1f7f4;
+        color: #12372a;
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+    .empty-title {
+        margin: 0 0 8px;
+        color: #12372a;
+        font-size: 19px;
+        font-weight: 800;
+    }
+
+    .empty-text {
+        max-width: 500px;
+        margin: 0 auto 22px;
+        color: #7a8781;
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    @media (max-width: 800px) {
+
+        .reminder-footer {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .actions {
+            width: 100%;
+            flex-wrap: wrap;
+        }
+
+    }
+
+    @media (max-width: 650px) {
+
+        .page-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .page-title {
+            font-size: 25px;
+        }
+
+        .btn-primary {
+            width: 100%;
+        }
+
+        .reminder-top {
+            flex-direction: column;
+        }
+
+        .actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            width: 100%;
+        }
+
+        .action-btn,
+        .action-form,
+        .action-form .action-btn {
+            width: 100%;
+        }
+
+        .reminder-stats {
+            flex-wrap: wrap;
+        }
+    }
+</style>
+
+
+<div class="reminders-page">
+
+    <div class="page-header">
+
+        <div>
+            <h1 class="page-title">
+                Reminders
+            </h1>
+
+            <p class="page-subtitle">
+                Schedule and manage church communication.
+            </p>
+        </div>
+
+        <a
+            href="{{ url_for('dashboard.add_reminder') }}"
+            class="btn btn-primary"
+        >
+            + Create Reminder
+        </a>
+
+    </div>
+
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+
+        {% if messages %}
+
+            <div class="flash-messages">
+
+                {% for category, message in messages %}
+
+                    <div
+                        class="flash-message
+                        {% if category == 'success' %}
+                            flash-success
+                        {% else %}
+                            flash-error
+                        {% endif %}"
+                    >
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+
+    {% endwith %}
+
+
+    {% if reminders %}
+
+        <div class="reminder-list">
+
+            {% for reminder in reminders %}
+
+                <div class="reminder-card">
+
+                    <div class="reminder-top">
+
+                        <div>
+
+                            <h2 class="reminder-title">
+                                {{ reminder.title }}
+                            </h2>
+
+                            <p class="reminder-message">
+                                {{ reminder.message }}
+                            </p>
+
+                        </div>
+
+
+                        {% if reminder.status == "scheduled" %}
+
+                            <span class="status status-scheduled">
+                                Scheduled
+                            </span>
+
+                        {% elif reminder.status == "paused" %}
+
+                            <span class="status status-paused">
+                                Paused
+                            </span>
+
+                        {% elif reminder.status == "completed" %}
+
+                            <span class="status status-completed">
+                                Completed
+                            </span>
+
+                        {% elif reminder.status == "failed" %}
+
+                            <span class="status status-failed">
+                                Failed
+                            </span>
+
+                        {% else %}
+
+                            <span class="status status-default">
+                                {{ reminder.status }}
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="reminder-meta">
+
+                        {% if reminder.program %}
+
+                            <span class="meta-item">
+                                Program:
+                                {{ reminder.program.name }}
+                            </span>
+
+                        {% endif %}
+
+
+                        {% if reminder.audience_type == "all" %}
+
+                            <span class="meta-item">
+                                Audience: All Members
+                            </span>
+
+                        {% else %}
+
+                            <span class="meta-item">
+                                Audience:
+
+                                {% for group in reminder.groups %}
+
+                                    {{ group.name }}{% if not loop.last %}, {% endif %}
+
+                                {% endfor %}
+
+                            </span>
+
+                        {% endif %}
+
+
+                        <span class="meta-item">
+                            Scheduled:
+                            {{ reminder.scheduled_at.strftime("%d %b %Y, %I:%M %p") }}
+                        </span>
+
+
+                        <span class="meta-item">
+                            Channel: SMS
+                        </span>
+
+
+                        {% if reminder.recurrence_type != "one_time" %}
+
+                            <span class="meta-item">
+                                Recurring:
+                                {{ reminder.recurrence_type|replace("_", " ")|capitalize }}
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="reminder-footer">
+
+                        <div class="reminder-stats">
+
+                            <span class="reminder-stat">
+                                Sent: {{ reminder.total_sent or 0 }}
+                            </span>
+
+                            {% if reminder.is_active %}
+
+                                <span class="reminder-stat">
+                                    ● Active
+                                </span>
+
+                            {% else %}
+
+                                <span class="reminder-stat">
+                                    ● Inactive
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="actions">
+
+                            <a
+                                href="{{ url_for('dashboard.reminder_details', reminder_id=reminder.id) }}"
+                                class="action-btn"
+                            >
+                                View
+                            </a>
+
+
+                            <a
+                                href="{{ url_for('dashboard.edit_reminder', reminder_id=reminder.id) }}"
+                                class="action-btn"
+                            >
+                                Edit
+                            </a>
+
+
+                            <form
+                                method="POST"
+                                action="{{ url_for('dashboard.toggle_reminder_status', reminder_id=reminder.id) }}"
+                                class="action-form"
+                            >
+
+                                <button
+                                    type="submit"
+                                    class="action-btn {% if reminder.is_active %}pause{% else %}activate{% endif %}"
+                                >
+                                    {% if reminder.is_active %}
+                                        Pause
+                                    {% else %}
+                                        Activate
+                                    {% endif %}
+                                </button>
+
+                            </form>
+
+
+                            <form
+                                method="POST"
+                                action="{{ url_for('dashboard.delete_reminder', reminder_id=reminder.id) }}"
+                                class="action-form"
+                                onsubmit="return confirm('Are you sure you want to delete this reminder? This action cannot be undone.');"
+                            >
+
+                                <button
+                                    type="submit"
+                                    class="action-btn delete"
+                                >
+                                    Delete
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <div class="empty-icon">
+                SMS
+            </div>
+
+            <h2 class="empty-title">
+                No reminders yet
+            </h2>
+
+            <p class="empty-text">
+                Create your first reminder and choose the program,
+                audience, message, and schedule.
+            </p>
+
+            <a
+                href="{{ url_for('dashboard.add_reminder') }}"
+                class="btn btn-primary"
+            >
+                Create First Reminder
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
